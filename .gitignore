@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyTorch
+*.pth
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# Cache
+.cache/
