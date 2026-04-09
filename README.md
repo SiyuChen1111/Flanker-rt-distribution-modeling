@@ -44,17 +44,17 @@ The repository is therefore in a **consolidation phase**, not an open-ended loca
 
 If you are new to this repository, start here:
 
-1. `logs.md`
+1. `docs/history/logs.md`
    - now moved to `docs/history/logs.md`
    - dated project timeline from the first VGG work through the current error-regime chain
 
-2. `results/organized/handoff/supervisor_update_2026-04-08.md`
+2. `artifacts/results/organized/handoff/supervisor_update_2026-04-08.md`
    - concise supervisor-facing summary
 
-3. `results/organized/handoff/error_regime_experiment_chain_memo.md`
+3. `artifacts/results/organized/handoff/error_regime_experiment_chain_memo.md`
    - most important technical memo for the latest WW branch
 
-4. `results/organized/README.md`
+4. `artifacts/results/organized/README.md`
    - guide to current result folders and evidence levels
 
 ---
@@ -116,7 +116,7 @@ If you are new to this repository, start here:
 - `logs/runtime_archive/` — archived runtime `.log` / `.pid` files
 - `config/` — configuration-style root files such as `requirements.txt`
 - `code/vam/` — canonical VAM mixed code/assets directory
-- root-level `vam/` and `Kar/` are retained as compatibility symlinks
+- root-level `vam/` and `Kar/` are retained as compatibility symlinks during migration and should not be treated as the canonical code location
 
 ---
 
@@ -134,8 +134,8 @@ so that the research trail remains interpretable.
 
 For the current best interpretation of file structure and evidence levels, see:
 
-- `results/organized/README.md`
-- `results/organized/FILE_MAPPING.md`
+- `artifacts/results/organized/README.md`
+- `artifacts/results/organized/FILE_MAPPING.md`
 
 For a root-file relocation map, also see:
 
