@@ -1,3 +1,0 @@
-age_group,scale,epoch,score,rt_score,model_accuracy,human_accuracy,model_congruency_rt_gap,human_congruency_rt_gap,human_mean_rt,model_mean_rt,checkpoint
-20-29 matched,0.2,5,0.6363,0.2263,0.9993,0.966,0.0595,0.0585,0.618,0.92,"scale 0.2, epoch 5"
-80-89,0.1,10,0.6489,0.3406,1.0,0.9791,0.1054,0.0854,0.9393,0.599,"scale 0.1, epoch 10"

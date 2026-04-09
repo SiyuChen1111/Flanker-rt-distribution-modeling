@@ -1,3 +1,0 @@
-age_group,status,best_scale,best_score,model_mean_rt,human_mean_rt,model_accuracy,human_accuracy,model_congruency_rt_gap,human_congruency_rt_gap,note
-20-29,interim_best_completed_scale,0.1,0.5753,0.487,0.6047703787960904,1.0,0.9343121921613483,0.0814,0.039673683709627205,"scale 4/5, epoch 01/20"
-80-89,final,0.2,0.6448078751564026,0.4319961965084076,0.8382647963227136,1.0,0.9614835948644793,0.09138941764831543,0.08296488505355903,formal Stage 2 result

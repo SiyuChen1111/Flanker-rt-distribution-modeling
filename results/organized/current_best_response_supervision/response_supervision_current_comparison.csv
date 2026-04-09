@@ -1,3 +1,0 @@
-age_group,status,scale,score,rt_score,model_accuracy,human_accuracy,model_congruency_rt_gap,human_congruency_rt_gap,human_mean_rt,model_mean_rt,note
-20-29,response_supervision_best_scale0.5_epoch20,0.5,0.5337256193161011,0.43565383553504944,1.0,0.9660006122212018,0.1656406819820404,0.05853778123855591,0.618,0.536967396736145,response_labels
-80-89,response_supervision_best_scale0.5_epoch20,0.5,0.5635972023010254,0.2598397731781006,1.0,0.9791204283204831,0.12626376748085022,0.08535170555114746,0.9393,0.46368250250816345,response_labels

@@ -1,4 +1,0 @@
-branch,status,scale,score,model_mean_rt,human_mean_rt,model_accuracy,human_accuracy,model_congruency_rt_gap,human_congruency_rt_gap,note
-20-29 full-data,interim_best_completed_scale,0.1,0.5753,0.487,0.6047703788,1.0,0.9343121922,0.0814,0.0396736837,"scale 4/5, epoch 01/20"
-20-29 matched,completed_scale_0.1,0.1,0.628,0.535,0.618,0.9999,0.966,0.0895,0.0585,completed scale 0.1
-80-89 final,final,0.2,0.6448078752,0.433164,0.8382647963,1.0,0.9614835949,0.093379,0.0829648851,formal Stage 2 result

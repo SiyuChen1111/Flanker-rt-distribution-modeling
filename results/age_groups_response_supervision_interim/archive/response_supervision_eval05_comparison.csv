@@ -1,3 +1,0 @@
-age_group,status,scale,score,rt_score,model_accuracy,human_accuracy,model_congruency_rt_gap,human_congruency_rt_gap,human_mean_rt,note
-20-29,response_supervision_eval05,0.1,0.5811,0.42,0.9767,0.966,0.1036,0.0585,0.618,first response-supervision eval at scale 0.1
-80-89,response_supervision_eval05,0.1,0.5759,0.4368,0.997,0.9791,0.1555,0.0854,0.9393,first response-supervision eval at scale 0.1

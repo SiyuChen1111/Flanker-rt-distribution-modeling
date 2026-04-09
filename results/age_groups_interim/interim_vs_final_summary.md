@@ -1,4 +1,0 @@
-| age_group   | status                       |   best_scale |   best_score |   model_mean_rt |   human_mean_rt |   model_accuracy |   human_accuracy |   model_congruency_rt_gap |   human_congruency_rt_gap | note                   |
-|:------------|:-----------------------------|-------------:|-------------:|----------------:|----------------:|-----------------:|-----------------:|--------------------------:|--------------------------:|:-----------------------|
-| 20-29       | interim_best_completed_scale |          0.1 |     0.5753   |        0.487    |        0.60477  |                1 |         0.934312 |                 0.0814    |                 0.0396737 | scale 4/5, epoch 01/20 |
-| 80-89       | final                        |          0.2 |     0.644808 |        0.431996 |        0.838265 |                1 |         0.961484 |                 0.0913894 |                 0.0829649 | formal Stage 2 result  |
