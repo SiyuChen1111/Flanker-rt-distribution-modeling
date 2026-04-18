@@ -1,0 +1,14 @@
+{
+  "verdict": "VGGWW-SINGLE-SUBJECT-NOT-FEASIBLE",
+  "keep_recommendation": "deprioritize_vgg_ww",
+  "scope": "bounded_panel_bounded_trial_budget_screen",
+  "scope_note": "This verdict is based on a bounded representative panel and capped per-subject train/test trial budgets; treat it as a framework screen rather than an uncapped final proof.",
+  "total_subjects": 6,
+  "feasible_subjects": 0,
+  "age_group_feasible_counts": {
+    "20-29": 0,
+    "80-89": 0
+  },
+  "subject_feasibility_rule": "subject_feasible = skew_present AND model_has_errors AND error_direction_match AND nondegenerate_accuracy",
+  "panel_feasibility_rule": "at least half of the panel feasible and at least one feasible subject in each age group"
+}
