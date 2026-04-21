@@ -38,12 +38,46 @@ def set_random_seed(seed: int):
         torch.cuda.manual_seed_all(seed)
 
 
-def pick_choice_state(traj: torch.Tensor, decision_times: torch.Tensor, dt_ms: int) -> torch.Tensor:
+def pick_choice_state(
+    traj: torch.Tensor,
+    decision_times: torch.Tensor,
+    dt_ms: int,
+    *,
+    choice_window: int = 3,
+) -> torch.Tensor:
+    """Windowed state-at-decision readout (legacy trainer).
+
+    Mirrors the canonical Stage-2 backend readout:
+      choice_state = mean(traj[:, t-k : t+1, :])
+    where t is the discretized decision index, and k=choice_window.
+    """
+
+    if int(choice_window) < 0:
+        raise ValueError('choice_window must be >= 0')
+
     pred_choice_idx = decision_times.argmin(dim=1)
     chosen_time = decision_times[torch.arange(traj.size(0), device=traj.device), pred_choice_idx]
     time_idx = torch.clamp((chosen_time * 1000.0 / float(dt_ms)).long(), min=0, max=traj.size(1) - 1)
-    batch_idx = torch.arange(traj.size(0), device=traj.device)
-    return traj[batch_idx, time_idx, :]
+
+    end_idx = time_idx
+    start_idx = torch.clamp(end_idx - int(choice_window), min=0)
+
+    cumsum = traj.cumsum(dim=1)
+    n_classes = traj.size(2)
+
+    end_gather = end_idx.view(-1, 1, 1).expand(-1, 1, n_classes)
+    sum_end = cumsum.gather(1, end_gather).squeeze(1)
+
+    start_minus1 = start_idx - 1
+    start_minus1_clamped = torch.clamp(start_minus1, min=0)
+    start_gather = start_minus1_clamped.view(-1, 1, 1).expand(-1, 1, n_classes)
+    sum_before = cumsum.gather(1, start_gather).squeeze(1)
+    sum_before = torch.where(start_idx.view(-1, 1) == 0, torch.zeros_like(sum_before), sum_before)
+
+    window_sum = sum_end - sum_before
+    denom = (end_idx - start_idx + 1).to(dtype=traj.dtype).view(-1, 1)
+    denom = torch.clamp(denom, min=1.0)
+    return window_sum / denom
 
 
 def evaluate_model(
@@ -57,10 +91,11 @@ def evaluate_model(
     logits_tensor = torch.tensor(cached['logits'], dtype=torch.float32, device=device)
     with torch.no_grad():
         decision_times, traj, threshold_t = model.rollout(logits_tensor)
-        choice_state = pick_choice_state(traj, decision_times, model.dt)
-        pred_choice = decision_times.argmin(dim=1).cpu().numpy()
+        choice_state = pick_choice_state(traj, decision_times, model.dt, choice_window=3)
+        pred_choice = choice_state.argmax(dim=1).cpu().numpy()
         pred_rt = decision_times.min(dim=1)[0].cpu().numpy()
-        choice_logits = (-decision_times / choice_temperature).cpu().numpy()
+        temperature = max(float(choice_temperature), 1e-6)
+        choice_logits = (choice_state / temperature).cpu().numpy()
         decision_times_np = decision_times.cpu().numpy()
         traj_np = traj.cpu().numpy().astype(np.float32)
     results = evaluate_joint_behavior(
@@ -148,7 +183,9 @@ def train_with_scale(
             optimizer.zero_grad()
             decision_times, traj, _threshold_t = model.rollout(batch_logits)
             pred_rt = decision_times.min(dim=1)[0]
-            choice_logits = -decision_times / choice_temperature
+            choice_state = pick_choice_state(traj, decision_times, model.dt, choice_window=3)
+            temperature = max(float(choice_temperature), 1e-6)
+            choice_logits = choice_state / temperature
             choice_loss = F.cross_entropy(choice_logits, batch_response)
             rt_loss = mse(pred_rt, batch_rt)
 
