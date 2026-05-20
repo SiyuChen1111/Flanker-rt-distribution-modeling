@@ -189,14 +189,13 @@ Reason:
 ## J. Final release hygiene review
 
 1. `reaggregated/` 公开性
-   - `artifacts/reaggregated_public_release_review.md` 已生成
+   - `artifacts/reaggregated_release_review.md` 已生成
    - 当前目录中文件都很小，且都是聚合表、聚合指标或 verdict 文件
-   - 默认判断：整体基本可公开
-   - 但其中包含 subject-level 聚合表，因此：
+   - 默认判断：除 subject-level 聚合表外，其余 reaggregated 文件可公开
+   - 你已确认以下文件不公开，因此已移出公开 evidence 目录：
      - `human_subject_level_metrics.csv`
      - `model_subject_level_metrics.csv`
      - `subject_level_comparison.csv`
-     仍建议你做最后一眼人工确认
 
 2. `/Users/siyu` 本地路径
    - 当前 public-facing README/docs 与已保留主线脚本中的已知本地绝对路径已处理
@@ -214,12 +213,12 @@ Reason:
    - 当前不需要执行 `git rm --cached .venv`
 
 4. 大文件
-   - 大文件 review 已写入 `artifacts/large_file_public_release_review.md`
+   - 大文件 review 已写入 `artifacts/large_file_release_review.md`
    - 需要避免提交的主要对象：
      - `artifacts/checkpoints/test/stage1/*.pth`
      - `archive/model_assets/vgg16-397923af.pth`
      - `data/vam_data/processed_cache/*.npy`
-   - `data/age_groups/20-29/train_data.csv` 需要你确认是否属于计划公开的数据发布范围
+   - `data/age_groups/20-29/train_data.csv` 已确认不公开，不应进入 public release
 
 5. `git status` 收敛情况
    - 还没有完全收成干净工作区
@@ -227,16 +226,12 @@ Reason:
    - 应采用选择性 `git add`，不要整体提交当前工作区
 
 6. 剩余需要 human confirmation 的文件
-   - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/human_subject_level_metrics.csv`
-   - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/model_subject_level_metrics.csv`
-   - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/subject_level_comparison.csv`
-   - `data/age_groups/20-29/train_data.csv`
+   - none from the previously flagged subject-level tables or `train_data.csv`; both have now been explicitly excluded from public release
 
 7. 当前状态
    - **Ready for final human review before public commit**
 
 8. naming normalization
-   - `artifacts/public_release_rename_plan.md` 已生成
    - 本轮没有执行任何 `git mv`
    - 原因：当前 public-core Python 和 Markdown 文件名已经符合 snake_case 或标准命名，且改名风险高于收益
 

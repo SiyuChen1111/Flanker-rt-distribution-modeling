@@ -44,6 +44,9 @@
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/single_subject_skew_decision_memo.md` -> `artifacts/archive_legacy_not_for_public/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/single_subject_skew_decision_memo.md` - non-public single-subject memo
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/subject_panel.csv` -> `artifacts/archive_legacy_not_for_public/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/subject_panel.csv` - non-public single-subject metadata
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/true_single_subject_feasibility_summary.md` -> `artifacts/archive_legacy_not_for_public/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/true_single_subject_feasibility_summary.md` - non-public single-subject summary
+- `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/human_subject_level_metrics.csv` -> `artifacts/archive_legacy_not_for_public/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated_subject_level/human_subject_level_metrics.csv` - explicitly excluded subject-level public table
+- `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/model_subject_level_metrics.csv` -> `artifacts/archive_legacy_not_for_public/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated_subject_level/model_subject_level_metrics.csv` - explicitly excluded subject-level public table
+- `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/subject_level_comparison.csv` -> `artifacts/archive_legacy_not_for_public/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated_subject_level/subject_level_comparison.csv` - explicitly excluded subject-level public table
 
 ## Kept
 
@@ -63,6 +66,7 @@
 - `artifacts/results/rt_model_variational_ww_synthesis/var_ww_mechanism_memo.md`
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/`
 - `code/scripts/train_age_groups_efficient.py` - kept as supporting utility because current public-core scripts still import it
+- `data/age_groups/20-29/train_data.csv` - explicitly excluded from public release and should not be staged
 
 ## Polished
 

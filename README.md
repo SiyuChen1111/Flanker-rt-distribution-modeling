@@ -45,6 +45,19 @@ Start with:
 4. `artifacts/results/rt_model_dmc_var_ww/summary_smoke.md`
 5. `artifacts/results/rt_model_variational_ww_synthesis/var_ww_mechanism_memo.md`
 
+## Repository layout
+
+- `code/scripts/`
+  Public-facing training, analysis, and support scripts for the current mechanism-test branch.
+- `docs/`
+  Short explanatory documents for the current public narrative.
+- `artifacts/results/rt_model_dmc_var_ww/`
+  Retained DMC + variational evidence + Wong-Wang result bundle for the public release.
+- `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/`
+  Retained aggregated single-subject evidence tables for the public release.
+- `artifacts/archive_legacy_not_for_public/`
+  Archived material kept out of the public release path.
+
 ## Notes
 
 Older experiments and archives remain in the tree, but the public update is centered on the DMC + variational evidence + Wong-Wang mechanism test.
