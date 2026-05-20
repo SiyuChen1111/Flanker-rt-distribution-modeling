@@ -20,7 +20,7 @@ Design:
   7. Evaluate against SPEA c0-c4 baselines
 
 Run from project root:
-  source .venv/bin/activate && cd /Users/siyu/Documents/GitHub/VAM-studying
+  source .venv/bin/activate
   python code/scripts/train_variational_ww_smoke.py \
     --age_group 20-29 \
     --data_root data/age_groups_matched \

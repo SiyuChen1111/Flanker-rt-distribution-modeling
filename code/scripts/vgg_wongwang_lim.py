@@ -970,27 +970,15 @@ def create_model(
     )
 
 
-def test_model():
-    """Test model forward pass."""
-    print("Testing VGGWongWangLIM model...")
-    
-    model = VGGWongWangLIM(pretrained=False, n_classes=4)
-    
-    x = torch.randn(2, 3, 128, 128)
-    
-    logits, decision_time, rt_pred = model(x)
-    
-    print(f"Input shape: {x.shape}")
-    print(f"Logits shape: {logits.shape}")
-    print(f"Decision time shape: {decision_time.shape}")
-    print(f"RT prediction shape: {rt_pred.shape}")
-    
-    print(f"\nLogits:\n{logits}")
-    print(f"\nDecision times:\n{decision_time}")
-    print(f"\nRT predictions:\n{rt_pred}")
-    
-    print("\nModel test complete!")
-
-
 if __name__ == '__main__':
-    test_model()
+    model = VGGWongWangLIM(pretrained=False, n_classes=4)
+    x = torch.randn(2, 3, 128, 128)
+    logits, decision_time, rt_pred = model(x)
+    print(
+        {
+            "input_shape": list(x.shape),
+            "logits_shape": list(logits.shape),
+            "decision_time_shape": list(decision_time.shape),
+            "rt_prediction_shape": list(rt_pred.shape),
+        }
+    )

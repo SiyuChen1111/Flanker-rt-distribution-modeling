@@ -1,5 +1,6 @@
 # macOS
 .DS_Store
+*.swp
 
 # Python
 __pycache__/
@@ -7,6 +8,9 @@ __pycache__/
 *$py.class
 *.so
 .Python
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -41,12 +45,15 @@ logs/
 logs/runtime_archive/
 *.pid
 *.log
+*.tmp
+*.bak
 
 # Legacy notebooks and local notebook state
 notebooks/legacy_root/
 
 # Model assets and bulky artifacts
 archive/model_assets/
+data/vam_data/processed_cache/
 
 # Optional: keep canonical artifacts tracked only when intentional
 # Remove these ignores if you want Git to track generated experiment outputs.
@@ -68,6 +75,8 @@ archive/model_assets/
 # Local generated datasets / scratch notes
 /data/
 /draft.md
+artifacts/archive_legacy_not_for_public/
+artifacts/**/_archive_not_for_public/
 
 # Generated research outputs (keep markdown conclusions intentionally tracked)
 archive/checkpoints_experiments/

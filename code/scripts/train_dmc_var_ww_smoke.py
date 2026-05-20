@@ -22,7 +22,7 @@ Design:
   5. Train with behavioral losses
 
 Run from project root:
-  source .venv/bin/activate && cd /Users/siyu/Documents/GitHub/VAM-studying
+  source .venv/bin/activate
   python code/scripts/train_dmc_var_ww_smoke.py \
     --age_group 20-29 --data_root data/age_groups_matched \
     --output_root artifacts/results/rt_model_dmc_var_ww/smoke \
@@ -37,6 +37,7 @@ import argparse
 import json
 import random
 import sys
+import time
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
@@ -251,6 +252,7 @@ class DMCVarWWModel(VariationalWWModel):
         self.dmc_selection_midpoint_s = dmc_selection_midpoint_s
         self.dmc_selection_tau_s = dmc_selection_tau_s
         self.dmc_apply_to = dmc_apply_to
+        self.ww_input_max = 1.0
 
     def forward(
         self,
@@ -272,6 +274,10 @@ class DMCVarWWModel(VariationalWWModel):
         ).reshape(B, self.evidence_time_steps, self.n_classes)
 
         ww_input = self._resample_evidence(transformed)
+        ww_input = torch.nan_to_num(ww_input, nan=0.0, posinf=self.ww_input_max, neginf=0.0).clamp(
+            min=0.0,
+            max=float(self.ww_input_max),
+        )
 
         # ── DMC modulation ──
         dmc_traces: Dict[str, Any] = {}
@@ -318,19 +324,23 @@ def _write_json(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(to_jsonable(payload), indent=2), encoding="utf-8")
 
 
-def _snapshot_ww_params(model) -> Dict[str, float]:
+def _snapshot_ww_params(model) -> Dict[str, Any]:
     """Capture scalar WW diagnostics for epoch-level tracking."""
     ww = model.ww
     with torch.no_grad():
         j_mat = ww.J_matrix.detach().cpu().numpy()
-        eigvals = np.linalg.eigvalsh(j_mat).tolist()
+        j_mat_safe = np.nan_to_num(j_mat, nan=0.0, posinf=1e6, neginf=-1e6)
+        try:
+            eigvals = np.linalg.eigvalsh(j_mat_safe).tolist()
+        except np.linalg.LinAlgError:
+            eigvals = []
         return {
             "j_ext": float(ww.J_ext.detach().cpu().numpy()),
             "I_0": float(ww.I_0.detach().cpu().numpy()),
             "threshold": float(ww.threshold.detach().cpu().numpy()),
             "noise_ampa": float(ww.noise_ampa.detach().cpu().numpy()),
-            "j_diag_mean": float(np.mean(np.diag(j_mat))),
-            "j_offdiag_mean": float(np.mean(j_mat[~np.eye(ww.n_classes, dtype=bool)])),
+            "j_diag_mean": float(np.mean(np.diag(j_mat_safe))),
+            "j_offdiag_mean": float(np.mean(j_mat_safe[~np.eye(ww.n_classes, dtype=bool)])),
             "j_eigvals": eigvals,
             "log_scale": float(model.log_scale.detach().cpu().numpy()),
             "scale": float(torch.exp(model.log_scale).detach().cpu().numpy()),
@@ -371,6 +381,8 @@ def train_dmc_variational_ww(
     dmc_apply_to: str = "incongruent_only",
     sigma_evidence_noise: float = 0.0,
     stage1_uncertainty_gain: float = 1.0,
+    cached_train_inputs: Optional[Dict[str, np.ndarray]] = None,
+    cached_test_inputs: Optional[Dict[str, np.ndarray]] = None,
 ) -> Dict[str, Any]:
     # --- gate thresholds for ΔRT-aware checkpoint selection ---
     neg_drt_min_acc = float(behavioral_loss_config.get("neg_drt_min_acc", 0.75))
@@ -378,25 +390,98 @@ def train_dmc_variational_ww(
     neg_drt_min_error = float(behavioral_loss_config.get("neg_drt_min_error", 0.02))
     set_seed(seed)
 
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
     # --- Stage 1: warm-start variational head ---
-    print("Stage 1: Training variational evidence head...")
-    train_stage1_head(
-        sampler=sampler,
-        dataset_loader=train_loader,
-        sampler_mode=sampler_mode,
-        epochs=epochs_stage1,
-        lambda_cls=1.0,
-        lambda_ssl=0.0,
-        lambda_teacher=0.25,
-        lambda_uncertainty_bound=0.05,
-        device=device,
-    )
+    stage1_complete = output_path / "stage1_complete.json"
+    if stage1_complete.exists():
+        print("Stage 1 already complete, skipping warm-start.")
+    else:
+        _write_json(
+            output_path / "stage1_started.json",
+            {"phase": "stage1_warmstart", "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "status": "running"},
+        )
+        print("Stage 1: Training variational evidence head...")
+        train_stage1_head(
+            sampler=sampler,
+            dataset_loader=train_loader,
+            sampler_mode=sampler_mode,
+            epochs=epochs_stage1,
+            lambda_cls=1.0,
+            lambda_ssl=0.0,
+            lambda_teacher=0.25,
+            lambda_uncertainty_bound=0.05,
+            device=device,
+        )
+        _write_json(
+            output_path / "stage1_complete.json",
+            {"phase": "stage1_warmstart", "completed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "status": "completed"},
+        )
 
     # --- Bundle evidence for WW training ---
-    print("Bundling evidence sequences (with flanker labels)...")
-    sampler.eval()
+    bundle_complete = output_path / "bundle_complete.json"
+    if bundle_complete.exists():
+        print("Evidence already bundled, skipping.")
+    else:
+        _write_json(
+            output_path / "bundle_started.json",
+            {"phase": "evidence_bundling", "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "status": "running"},
+        )
+        print("Bundling evidence sequences (with flanker labels)...")
+        sampler.eval()
 
-    def _bundle_evidence(loader: DataLoader, gen_seed: int) -> Dict[str, np.ndarray]:
+    bundle_heartbeat_path = output_path / "bundle.heartbeat.json"
+
+    def _write_bundle_heartbeat(payload: Dict[str, Any]) -> None:
+        _write_json(bundle_heartbeat_path, payload)
+
+    def _bundle_from_cached_inputs(cached: Dict[str, np.ndarray], gen_seed: int, split_name: str) -> Dict[str, np.ndarray]:
+        feature_key = "pooled_features" if "pooled_features" in cached else "features"
+        if feature_key not in cached:
+            raise ValueError(f"CACHED_FEATURES_MISSING: split={split_name}")
+        if "logits" not in cached:
+            raise ValueError(f"CACHED_LOGITS_MISSING: split={split_name}")
+        gen = torch.Generator(device="cpu")
+        gen.manual_seed(gen_seed)
+        features = torch.tensor(np.asarray(cached[feature_key], dtype=np.float32), dtype=torch.float32, device=device)
+        logits = torch.tensor(np.asarray(cached["logits"], dtype=np.float32), dtype=torch.float32, device=device)
+        rows: Dict[str, list] = {"evidence_samples": []}
+        batch_size = 512
+        n_rows = int(features.shape[0])
+        with torch.no_grad():
+            for start in range(0, n_rows, batch_size):
+                end = min(start + batch_size, n_rows)
+                payload = sampler.sample_evidence_sequence(
+                    pooled_features=features[start:end],
+                    base_logits=logits[start:end],
+                    time_steps=evidence_time_steps,
+                    sampler_mode=sampler_mode,
+                    uncertainty_gain=stage1_uncertainty_gain,
+                    generator=gen,
+                )
+                rows["evidence_samples"].append(payload["evidence_samples"].detach().cpu().numpy())
+                _write_bundle_heartbeat(
+                    {
+                        "phase": "evidence_bundling",
+                        "status": "running",
+                        "source": "cached_features",
+                        "split": split_name,
+                        "rows_done": int(end),
+                        "rows_total": int(n_rows),
+                    }
+                )
+
+        return {
+            "evidence_samples": np.concatenate(rows["evidence_samples"], axis=0),
+            "target_labels": np.asarray(cached["target_labels"], dtype=np.int64),
+            "response_labels": np.asarray(cached["response_labels"], dtype=np.int64),
+            "flanker_labels": np.asarray(cached["flanker_labels"], dtype=np.int64),
+            "rts": np.asarray(cached["rts"], dtype=np.float32),
+            "congruency": np.asarray(cached["congruency"], dtype=np.int64),
+        }
+
+    def _bundle_evidence(loader: DataLoader, gen_seed: int, split_name: str) -> Dict[str, np.ndarray]:
         gen = torch.Generator(device="cpu")
         gen.manual_seed(gen_seed)
         rows: Dict[str, list] = {
@@ -408,6 +493,11 @@ def train_dmc_variational_ww(
             "congruency": [],
         }
         with torch.no_grad():
+            rows_done = 0
+            try:
+                total_rows = int(len(loader.dataset))
+            except Exception:
+                total_rows = 0
             for batch in loader:
                 images = batch["image"].to(device)
                 payload = sampler.sample_from_images(
@@ -425,22 +515,69 @@ def train_dmc_variational_ww(
                 rows["flanker_labels"].append(batch["flanker_label"].cpu().numpy())
                 rows["rts"].append(batch["rt"].cpu().numpy())
                 rows["congruency"].append(batch["congruency"].cpu().numpy())
+                rows_done += int(images.shape[0])
+                _write_bundle_heartbeat(
+                    {
+                        "phase": "evidence_bundling",
+                        "status": "running",
+                        "source": "images",
+                        "split": split_name,
+                        "rows_done": int(rows_done),
+                        "rows_total": int(total_rows),
+                    }
+                )
 
         return {
             key: np.concatenate([np.asarray(v) for v in values], axis=0)
             for key, values in rows.items()
         }
 
-    train_bundle = _bundle_evidence(train_loader, seed)
-    test_bundle = _bundle_evidence(test_loader, seed + 1)
+    if cached_train_inputs is not None and cached_test_inputs is not None:
+        print("Bundling evidence sequences from cached Stage-1 features...", flush=True)
+        train_bundle = _bundle_from_cached_inputs(cached_train_inputs, seed, "train")
+        test_bundle = _bundle_from_cached_inputs(cached_test_inputs, seed + 1, "test")
+    else:
+        train_bundle = _bundle_evidence(train_loader, seed, "train")
+        test_bundle = _bundle_evidence(test_loader, seed + 1, "test")
+
+    if not bundle_complete.exists():
+        _write_json(
+            output_path / "bundle_complete.json",
+            {"phase": "evidence_bundling", "completed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "status": "completed",
+             "n_train": int(len(train_bundle["evidence_samples"])),
+             "n_test": int(len(test_bundle["evidence_samples"]))},
+        )
+    _write_bundle_heartbeat(
+        {
+            "phase": "evidence_bundling",
+            "status": "completed",
+            "n_train": int(len(train_bundle["evidence_samples"])),
+            "n_test": int(len(test_bundle["evidence_samples"])),
+        }
+    )
 
     # --- Stage 2: Train DMC+WW on variational evidence ---
-    print(f"Stage 2: Training DMC+WW ({epochs_ww} epochs)...")
+    _write_json(
+        output_path / "stage2_started.json",
+        {"phase": "stage2_ww_training", "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "status": "running",
+         "epochs_ww": epochs_ww},
+    )
+    stage2_heartbeat_path = output_path / "stage2.heartbeat.json"
+    _write_json(
+        stage2_heartbeat_path,
+        {
+            "phase": "stage2_ww_training",
+            "status": "running",
+            "epochs_requested": int(epochs_ww),
+            "epoch": 0,
+        },
+    )
+    print(f"Stage 2: Training DMC+WW ({epochs_ww} epochs)...", flush=True)
     if sigma_evidence_noise > 0:
-        print(f"  Sensory noise: sigma={sigma_evidence_noise:.4f} (age-dependent evidence degradation)")
+        print(f"  Sensory noise: sigma={sigma_evidence_noise:.4f} (age-dependent evidence degradation)", flush=True)
     n_train = len(train_bundle["evidence_samples"])
     n_incongruent = int((train_bundle["target_labels"] != train_bundle["flanker_labels"]).sum())
-    print(f"  Train trials: {n_train} ({n_incongruent} incongruent)")
+    print(f"  Train trials: {n_train} ({n_incongruent} incongruent)", flush=True)
 
     model = DMCVarWWModel(
         n_classes=4,
@@ -535,12 +672,21 @@ def train_dmc_variational_ww(
             rt_mse = F.mse_loss(pred_rt, rt_b) * lambda_rt
             loss = behavioral_losses["loss"] + rt_mse
 
+            if not torch.isfinite(loss):
+                print(f"  Skipping non-finite batch loss at epoch {epoch + 1}, batch_start={start}")
+                optimizer.zero_grad(set_to_none=True)
+                continue
+
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
 
             total_loss_val += loss.item()
             n_batches += 1
+
+        if n_batches == 0:
+            raise RuntimeError(f"DMC_WW_ALL_BATCHES_NONFINITE: epoch={epoch + 1}")
 
         # --- Evaluate ---
         model.eval()
@@ -600,7 +746,23 @@ def train_dmc_variational_ww(
             f"beh_opt={score:.4f}, acc={metrics['model_accuracy']:.4f}, "
             f"resp_agree={metrics['response_agreement']:.4f}, "
             f"ΔRT={drt:+.4f}, "
-            f"pred_mean={metrics['pred_mean']:.3f}s"
+            f"pred_mean={metrics['pred_mean']:.3f}s",
+            flush=True,
+        )
+        _write_json(
+            stage2_heartbeat_path,
+            {
+                "phase": "stage2_ww_training",
+                "status": "running",
+                "epochs_requested": int(epochs_ww),
+                "epoch": int(epoch + 1),
+                "loss": float(total_loss_val / max(n_batches, 1)),
+                "beh_opt": float(score),
+                "acc": float(acc),
+                "response_agreement": float(metrics["response_agreement"]),
+                "error_minus_correct_rt": float(drt),
+                "pred_mean": float(metrics["pred_mean"]),
+            },
         )
 
         # Track best by beh_opt
@@ -692,7 +854,7 @@ def train_dmc_variational_ww(
             output_path / "predictions_neg_drt.npz",
             **best_neg_drt_preds,
         )
-        print(f"  Saved gated neg-ΔRT predictions (ΔRT={best_neg_drt_gated:+.4f}, epoch={best_neg_drt_epoch})")
+        print(f"  Saved gated neg-ΔRT predictions (ΔRT={best_neg_drt_gated:+.4f}, epoch={best_neg_drt_epoch})", flush=True)
 
     _write_json(
         output_path / "run_complete.json",
@@ -712,27 +874,38 @@ def train_dmc_variational_ww(
             },
         },
     )
+    _write_json(
+        stage2_heartbeat_path,
+        {
+            "phase": "stage2_ww_training",
+            "status": "completed",
+            "epochs_requested": int(epochs_ww),
+            "epoch": int(len(all_epoch_metrics)),
+            "best_score": float(best_score),
+            "best_drt": float(best_epoch_drt),
+        },
+    )
 
     # --- final summary banner ---
-    print(f"\n{'='*60}")
-    print(f"  DMC+Var→WW Training Complete")
-    print(f"{'='*60}")
-    print(f"  Best beh_opt checkpoint (epoch {len(all_epoch_metrics)}):")
-    print(f"    score={best_score:.4f}")
-    print(f"    acc={best_metrics['model_accuracy']:.4f} (human: {best_metrics['human_accuracy']:.4f})")
-    print(f"    resp_agree={best_metrics['response_agreement']:.4f}")
-    print(f"    ΔRT={best_metrics['error_minus_correct_rt']:+.4f} (human: {best_metrics['human_error_minus_correct_rt']:+.4f})")
-    print(f"    pred_mean={best_metrics['pred_mean']:.3f}s (human: {best_metrics['true_mean']:.3f}s)")
-    print(f"  Best ΔRT (any epoch): {best_epoch_drt:+.4f}")
+    print(f"\n{'='*60}", flush=True)
+    print(f"  DMC+Var→WW Training Complete", flush=True)
+    print(f"{'='*60}", flush=True)
+    print(f"  Best beh_opt checkpoint (epoch {len(all_epoch_metrics)}):", flush=True)
+    print(f"    score={best_score:.4f}", flush=True)
+    print(f"    acc={best_metrics['model_accuracy']:.4f} (human: {best_metrics['human_accuracy']:.4f})", flush=True)
+    print(f"    resp_agree={best_metrics['response_agreement']:.4f}", flush=True)
+    print(f"    ΔRT={best_metrics['error_minus_correct_rt']:+.4f} (human: {best_metrics['human_error_minus_correct_rt']:+.4f})", flush=True)
+    print(f"    pred_mean={best_metrics['pred_mean']:.3f}s (human: {best_metrics['true_mean']:.3f}s)", flush=True)
+    print(f"  Best ΔRT (any epoch): {best_epoch_drt:+.4f}", flush=True)
     if best_neg_drt_state is not None:
-        print(f"\n  ★ GATED NEG-ΔRT checkpoint (acc≥{neg_drt_min_acc}, resp≥{neg_drt_min_resp}, err≥{neg_drt_min_error}):")
-        print(f"    epoch={best_neg_drt_epoch}, ΔRT={best_neg_drt_gated:+.4f}")
+        print(f"\n  ★ GATED NEG-ΔRT checkpoint (acc≥{neg_drt_min_acc}, resp≥{neg_drt_min_resp}, err≥{neg_drt_min_error}):", flush=True)
+        print(f"    epoch={best_neg_drt_epoch}, ΔRT={best_neg_drt_gated:+.4f}", flush=True)
         if best_neg_drt_metrics is None:
             raise RuntimeError("Missing gated negative-ΔRT metrics at final reporting time")
-        print(f"    acc={best_neg_drt_metrics['model_accuracy']:.4f}, resp={best_neg_drt_metrics['response_agreement']:.4f}")
+        print(f"    acc={best_neg_drt_metrics['model_accuracy']:.4f}, resp={best_neg_drt_metrics['response_agreement']:.4f}", flush=True)
     else:
-        print(f"\n  ⚠ No epoch passed neg-ΔRT gates (acc≥{neg_drt_min_acc}, resp≥{neg_drt_min_resp}, err≥{neg_drt_min_error})")
-    print(f"{'='*60}")
+        print(f"\n  ⚠ No epoch passed neg-ΔRT gates (acc≥{neg_drt_min_acc}, resp≥{neg_drt_min_resp}, err≥{neg_drt_min_error})", flush=True)
+    print(f"{'='*60}", flush=True)
 
     return {"best_metrics": best_metrics, "best_score": best_score, "best_drt": best_epoch_drt}
 
