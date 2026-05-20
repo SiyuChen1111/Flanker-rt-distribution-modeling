@@ -939,7 +939,13 @@ def train_stage2_with_scale(
                 + rt_moment_anchor_loss_weight * rt_moment_anchor_loss
                 + behavioral_total
             )
+
+            if not torch.isfinite(loss):
+                optimizer.zero_grad(set_to_none=True)
+                continue
+
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             
             total_loss += loss.item()
@@ -1379,6 +1385,32 @@ def fit_stage2_from_logits(
     for scale_idx, scale in enumerate(scales, start=1):
         scale_start = perf_counter()
         log_prefix = f"[{age_group} scale {scale_idx}/{total_scales}] "
+        scale_complete_marker = Path(output_dir) / "scales" / f"scale_{scale_idx:02d}_complete.json"
+        if scale_complete_marker.exists():
+            print(f"{log_prefix}Scale already complete, skipping.")
+            try:
+                prior = json.loads(scale_complete_marker.read_text(encoding="utf-8"))
+                test_predictions_path = Path(output_dir) / "scales" / f"scale_{scale_idx:02d}_predictions.npz"
+                params_path = Path(output_dir) / "scales" / f"scale_{scale_idx:02d}_params.npz"
+                if test_predictions_path.exists() and params_path.exists():
+                    params = dict(np.load(params_path))
+                    test_predictions = dict(np.load(test_predictions_path))
+                    canonical_results = prior.get("results", {})
+                    ranking_key = tuple(prior.get("ranking_key", []))
+                    results_list.append({
+                        'scale': scale,
+                        'score': float(canonical_results.get('total_score', 0.0)),
+                        'ranking_key': ranking_key,
+                        'results': canonical_results,
+                        'params': params,
+                        'selection_details': prior.get('selection_details', {}),
+                        'selection_results': prior.get('selection_results', {}),
+                    })
+                    if global_best_key is None or ranking_key > global_best_key:
+                        global_best_key = ranking_key
+                    continue
+            except Exception:
+                print(f"{log_prefix}Scale marker exists but corrupted, re-running.")
         print(f"{log_prefix}Beginning optimization")
         scale_train_seed = None if random_seed is None else int(random_seed + scale_idx * 1000)
         scale_eval_seed = None if eval_random_seed is None else int(eval_random_seed)
@@ -1511,6 +1543,24 @@ def fit_stage2_from_logits(
                 },
             )
 
+        scale_complete_marker.parent.mkdir(parents=True, exist_ok=True)
+        with open(str(scale_complete_marker), 'w') as f:
+            json.dump(to_jsonable({
+                "scale": float(scale),
+                "scale_idx": scale_idx,
+                "score": float(canonical_results['total_score']),
+                "ranking_key": list(ranking_key),
+                "results": canonical_results,
+                "selection_details": selection_details,
+                "selection_results": results,
+            }), f, indent=2)
+        # Save per-scale params and predictions for resume
+        np.savez(str(scale_complete_marker.parent / f"scale_{scale_idx:02d}_params.npz"), **params)
+        np.savez_compressed(
+            str(scale_complete_marker.parent / f"scale_{scale_idx:02d}_predictions.npz"),
+            pred_rt=test_predictions['pred_rt'],
+            pred_choice=test_predictions['pred_choice'],
+        )
         scale_duration = perf_counter() - scale_start
         print(
             f"{log_prefix}Finished in {scale_duration:.2f}s | "

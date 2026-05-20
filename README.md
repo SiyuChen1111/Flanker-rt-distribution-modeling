@@ -48,7 +48,7 @@ Start with:
 ## Repository layout
 
 - `code/scripts/`
-  Public-facing training, analysis, and support scripts for the current mechanism-test branch.
+  The retained script set for the current mechanism-test branch. This directory now contains the public-core training and analysis scripts, plus a small number of supporting utility scripts that are still required by the retained workflow.
 - `docs/`
   Short explanatory documents for the current public narrative.
 - `artifacts/results/rt_model_dmc_var_ww/`
@@ -56,7 +56,7 @@ Start with:
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/`
   Retained aggregated single-subject evidence tables for the public release.
 - `artifacts/archive_legacy_not_for_public/`
-  Archived material kept out of the public release path.
+  Archived material kept out of the public release path, including older result branches and non-core legacy scripts moved out of `code/scripts/`.
 
 ## Notes
 

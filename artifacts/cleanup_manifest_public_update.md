@@ -47,6 +47,7 @@
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/human_subject_level_metrics.csv` -> `artifacts/archive_legacy_not_for_public/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated_subject_level/human_subject_level_metrics.csv` - explicitly excluded subject-level public table
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/model_subject_level_metrics.csv` -> `artifacts/archive_legacy_not_for_public/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated_subject_level/model_subject_level_metrics.csv` - explicitly excluded subject-level public table
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/subject_level_comparison.csv` -> `artifacts/archive_legacy_not_for_public/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated_subject_level/subject_level_comparison.csv` - explicitly excluded subject-level public table
+- `code/scripts/` legacy experiment and non-core workflow scripts -> `artifacts/archive_legacy_not_for_public/code/scripts/` - archived because they do not match the current variational evidence + DMC + Wong-Wang mechanism-test release scope
 
 ## Kept
 

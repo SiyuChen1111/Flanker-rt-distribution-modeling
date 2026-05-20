@@ -13,7 +13,7 @@ Modes:
   - full: audit-baseline -> build-panel -> fit (both age groups)
 
 Outputs are written under a dedicated results tree (default:
-artifacts/results/repro_legacy_interim/true_single_subject_feasibility).
+artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only).
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ import sys
 import time
 import zlib
 from pathlib import Path
-from typing import Any, Dict, Iterable, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -42,7 +42,7 @@ from train_age_groups_efficient import (
 
 
 AGE_GROUPS: Tuple[str, str] = ("20-29", "80-89")
-DEFAULT_OUTPUT_ROOT = RESULTS_ROOT / "repro_legacy_interim" / "true_single_subject_feasibility"
+DEFAULT_OUTPUT_ROOT = RESULTS_ROOT / "repro_legacy_interim" / "true_single_subject_feasibility_rt_response_only"
 
 
 def parse_args() -> argparse.Namespace:
@@ -77,6 +77,8 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument("--choice_temperature", type=float, default=0.05)
+    parser.add_argument("--behavior_smoke_mode", default="rt_response_only", choices=("baseline", "rt_response_only", "checkpoint_tail_focus"))
+    parser.add_argument("--fixed_noise_ampa", type=float, default=None)
     parser.add_argument("--max_train_trials", type=int, default=8000)
     parser.add_argument("--max_test_trials", type=int, default=2000)
     return parser.parse_args()
@@ -473,6 +475,8 @@ def fit_age_group(
     epochs: int,
     scales: np.ndarray,
     choice_temperature: float,
+    behavior_smoke_mode: str,
+    fixed_noise_ampa: Optional[float],
     max_train_trials: int,
     max_test_trials: int,
 ) -> None:
@@ -489,10 +493,42 @@ def fit_age_group(
     if not subjects:
         raise ValueError(f"NO_SUBJECTS_FOR_AGE_GROUP: age_group={age_group}")
 
+    _write_json(
+        output_root / "heartbeat.json",
+        {
+            "schema_version": "true_single_subject_feasibility.heartbeat.v1",
+            "started_at": _now_iso(),
+            "status": "running",
+            "phase": "fit_age_group",
+            "age_group": age_group,
+            "n_subjects": len(subjects),
+        },
+    )
+
     combined_df, combined_cached = _load_combined_cached_and_df(age_group)
+    lambda_rt = 1.0
+    lambda_choice = 1.0
+    lambda_cong = 0.0
+    lambda_tail = 0.0
+    lambda_pileup = 0.0
+    behavior_loss_weight = 0.0
+    rt_distribution_loss_weight = 0.0
+    conditional_rt_distribution_loss_weight = 0.0
+    rt_moment_anchor_loss_weight = 0.0
     for uid in subjects:
         user_dir = output_root / age_group / f"user_{uid}"
         user_dir.mkdir(parents=True, exist_ok=True)
+        _write_json(
+            user_dir / "subject_started.json",
+            {
+                "schema_version": "true_single_subject_feasibility.subject_started.v1",
+                "age_group": age_group,
+                "user_id": str(uid),
+                "started_at": _now_iso(),
+                "status": "starting",
+                "phase": "fit",
+            },
+        )
         existing_summary = user_dir / "subject_eval_summary.json"
         existing_config = user_dir / "best_config.json"
         existing_params = user_dir / "best_model_params.npz"
@@ -518,6 +554,7 @@ def fit_age_group(
             seed=int(seed) + _stable_int_seed(f"{age_group}-{uid}-test-subset"),
         )
         split_hash = int(_stable_indices_hash(train_idx, test_idx))
+        summary_eval_seed = int(seed) + 13
 
         if existing_summary.exists() and existing_config.exists() and existing_params.exists():
             try:
@@ -544,8 +581,43 @@ def fit_age_group(
                 same_train_budget = int(subset_meta.get("max_train_trials", -1)) == int(max_train_trials)
                 same_test_budget = int(subset_meta.get("max_test_trials", -1)) == int(max_test_trials)
                 same_split_hash = int(subset_meta.get("split_hash", -1)) == int(split_hash)
+                same_lambda_rt = float(subset_meta.get("lambda_rt", float("nan"))) == float(lambda_rt)
+                same_lambda_choice = float(subset_meta.get("lambda_choice", float("nan"))) == float(lambda_choice)
+                same_lambda_cong = float(subset_meta.get("lambda_cong", float("nan"))) == float(lambda_cong)
+                same_lambda_tail = float(subset_meta.get("lambda_tail", float("nan"))) == float(lambda_tail)
+                same_lambda_pileup = float(subset_meta.get("lambda_pileup", float("nan"))) == float(lambda_pileup)
+                same_behavior_loss_weight = float(subset_meta.get("behavior_loss_weight", float("nan"))) == float(behavior_loss_weight)
+                same_rt_distribution_loss_weight = float(subset_meta.get("rt_distribution_loss_weight", float("nan"))) == float(rt_distribution_loss_weight)
+                same_conditional_rt_distribution_loss_weight = float(subset_meta.get("conditional_rt_distribution_loss_weight", float("nan"))) == float(conditional_rt_distribution_loss_weight)
+                same_rt_moment_anchor_loss_weight = float(subset_meta.get("rt_moment_anchor_loss_weight", float("nan"))) == float(rt_moment_anchor_loss_weight)
+                same_behavior_smoke_mode = str(subset_meta.get("behavior_smoke_mode", "")) == str(behavior_smoke_mode)
+                same_summary_eval_seed = int(subset_meta.get("summary_eval_seed", -1)) == int(summary_eval_seed)
+                subset_noise = subset_meta.get("fixed_noise_ampa", None)
+                same_fixed_noise_ampa = (
+                    (subset_noise is None and fixed_noise_ampa is None)
+                    or (subset_noise is not None and fixed_noise_ampa is not None and float(subset_noise) == float(fixed_noise_ampa))
+                )
 
-                if same_epochs and same_temp and same_scales and same_train_budget and same_test_budget and same_split_hash:
+                if (
+                    same_epochs
+                    and same_temp
+                    and same_scales
+                    and same_train_budget
+                    and same_test_budget
+                    and same_split_hash
+                    and same_lambda_rt
+                    and same_lambda_choice
+                    and same_lambda_cong
+                    and same_lambda_tail
+                    and same_lambda_pileup
+                    and same_behavior_loss_weight
+                    and same_rt_distribution_loss_weight
+                    and same_conditional_rt_distribution_loss_weight
+                    and same_rt_moment_anchor_loss_weight
+                    and same_behavior_smoke_mode
+                    and same_summary_eval_seed
+                    and same_fixed_noise_ampa
+                ):
                     continue
 
         train_cached = _filter_cached_by_indices(combined_cached, train_idx)
@@ -568,6 +640,18 @@ def fit_age_group(
                 "epochs_requested": int(epochs),
                 "choice_temperature": float(choice_temperature),
                 "scales": [float(x) for x in scales.tolist()],
+                "lambda_rt": float(lambda_rt),
+                "lambda_choice": float(lambda_choice),
+                "lambda_cong": float(lambda_cong),
+                "lambda_tail": float(lambda_tail),
+                "lambda_pileup": float(lambda_pileup),
+                "behavior_loss_weight": float(behavior_loss_weight),
+                "rt_distribution_loss_weight": float(rt_distribution_loss_weight),
+                "conditional_rt_distribution_loss_weight": float(conditional_rt_distribution_loss_weight),
+                "rt_moment_anchor_loss_weight": float(rt_moment_anchor_loss_weight),
+                "behavior_smoke_mode": str(behavior_smoke_mode),
+                "summary_eval_seed": int(summary_eval_seed),
+                "fixed_noise_ampa": None if fixed_noise_ampa is None else float(fixed_noise_ampa),
             },
         )
 
@@ -581,6 +665,17 @@ def fit_age_group(
             scales=scales,
             epochs=int(epochs),
             choice_temperature=float(choice_temperature),
+            lambda_rt=float(lambda_rt),
+            lambda_choice=float(lambda_choice),
+            lambda_cong=float(lambda_cong),
+            lambda_tail=float(lambda_tail),
+            lambda_pileup=float(lambda_pileup),
+            behavior_loss_weight=float(behavior_loss_weight),
+            rt_distribution_loss_weight=float(rt_distribution_loss_weight),
+            conditional_rt_distribution_loss_weight=float(conditional_rt_distribution_loss_weight),
+            rt_moment_anchor_loss_weight=float(rt_moment_anchor_loss_weight),
+            behavior_smoke_mode=str(behavior_smoke_mode),
+            fixed_noise_ampa=None if fixed_noise_ampa is None else float(fixed_noise_ampa),
             random_seed=int(seed) + _stable_int_seed(f"{age_group}-{uid}"),
             eval_random_seed=int(seed) + 13,
         )
@@ -589,6 +684,7 @@ def fit_age_group(
         best_scale = float(best_cfg["scale"])
         time_steps = int(best_cfg["time_steps"])
         best_epoch = int(best_cfg.get("best_epoch", -1)) if isinstance(best_cfg, dict) else -1
+        best_eval_seed = int(best_cfg.get("eval_random_seed", int(summary_eval_seed)))
         params_npz = np.load(user_dir / "best_model_params.npz")
         params = {k: params_npz[k] for k in params_npz.files}
         _, metrics_test = evaluate_cached_stage2_params(
@@ -598,7 +694,7 @@ def fit_age_group(
             cached=test_cached,
             device=device,
             choice_temperature=float(choice_temperature),
-            random_seed=int(seed) + 31,
+            random_seed=int(best_eval_seed),
             rt_shape_focus=True,
         )
         subject_summary = {
@@ -614,12 +710,61 @@ def fit_age_group(
                 "seed": int(seed),
                 "scales": [float(x) for x in scales.tolist()],
                 "rt_normalization": norm,
+                "objective": {
+                    "lambda_rt": float(lambda_rt),
+                    "lambda_choice": float(lambda_choice),
+                    "lambda_cong": float(lambda_cong),
+                    "lambda_tail": float(lambda_tail),
+                    "lambda_pileup": float(lambda_pileup),
+                    "behavior_loss_weight": float(behavior_loss_weight),
+                    "rt_distribution_loss_weight": float(rt_distribution_loss_weight),
+                    "conditional_rt_distribution_loss_weight": float(conditional_rt_distribution_loss_weight),
+                    "rt_moment_anchor_loss_weight": float(rt_moment_anchor_loss_weight),
+                    "behavior_smoke_mode": str(behavior_smoke_mode),
+                    "summary_eval_seed": int(best_eval_seed),
+                    "fixed_noise_ampa": None if fixed_noise_ampa is None else float(fixed_noise_ampa),
+                },
             },
             "test_metrics": metrics_test,
             "test_n_trials": int(len(test_cached["rts"])),
             "test_n_errors": int(np.sum(test_cached["response_labels"] != test_cached["target_labels"])),
         }
         _write_json(user_dir / "subject_eval_summary.json", subject_summary)
+
+
+def _panel_analysis_ready(output_root: Path) -> bool:
+    panel_path = output_root / "subject_panel.csv"
+    if not panel_path.exists():
+        return False
+    panel_df = pd.read_csv(panel_path)
+    if panel_df.empty:
+        return False
+    required = (
+        "subject_eval_summary.json",
+        "best_config.json",
+        "best_model_params.npz",
+        "test_logits.npz",
+    )
+    for _, row in panel_df.iterrows():
+        user_dir = output_root / str(row["age_group"]) / f"user_{row['user_id']}"
+        for filename in required:
+            if not (user_dir / filename).exists():
+                return False
+    return True
+
+
+def _run_true_single_subject_analysis(output_root: Path) -> None:
+    analysis_cmd = [
+        sys.executable,
+        "code/scripts/analyze_true_single_subject_feasibility.py",
+        "--input_root",
+        str(output_root),
+        "--output_root",
+        str(output_root),
+    ]
+    completed = subprocess.run(analysis_cmd, check=False)
+    if completed.returncode != 0:
+        raise RuntimeError(f"Analysis command failed with exit code {completed.returncode}: {' '.join(analysis_cmd)}")
 
 
 def main() -> None:
@@ -662,9 +807,15 @@ def main() -> None:
             epochs=int(args.epochs),
             scales=scales,
             choice_temperature=float(args.choice_temperature),
+            behavior_smoke_mode=str(args.behavior_smoke_mode),
+            fixed_noise_ampa=None if args.fixed_noise_ampa is None else float(args.fixed_noise_ampa),
             max_train_trials=int(args.max_train_trials),
             max_test_trials=int(args.max_test_trials),
         )
+        if _panel_analysis_ready(output_root):
+            _run_true_single_subject_analysis(output_root)
+        else:
+            print(f"Skipping panel analysis refresh for {output_root}: panel is not fully ready yet")
         return
 
     if args.mode == "full":
@@ -692,20 +843,12 @@ def main() -> None:
                 epochs=int(args.epochs),
                 scales=scales,
                 choice_temperature=float(args.choice_temperature),
+                behavior_smoke_mode=str(args.behavior_smoke_mode),
+                fixed_noise_ampa=None if args.fixed_noise_ampa is None else float(args.fixed_noise_ampa),
                 max_train_trials=int(args.max_train_trials),
                 max_test_trials=int(args.max_test_trials),
             )
-        analysis_cmd = [
-            sys.executable,
-            "code/scripts/analyze_true_single_subject_feasibility.py",
-            "--input_root",
-            str(output_root),
-            "--output_root",
-            str(output_root),
-        ]
-        completed = subprocess.run(analysis_cmd, check=False)
-        if completed.returncode != 0:
-            raise RuntimeError(f"Analysis command failed with exit code {completed.returncode}: {' '.join(analysis_cmd)}")
+        _run_true_single_subject_analysis(output_root)
         return
 
     raise ValueError(f"Unknown mode: {args.mode}")
