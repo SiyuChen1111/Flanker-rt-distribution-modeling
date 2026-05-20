@@ -54,6 +54,16 @@ Start with:
   The retained script set for the current mechanism-test branch. This directory now contains the public-core training and analysis scripts, plus a small number of supporting utility scripts that are still required by the retained workflow.
 - `docs/`
   Short explanatory documents for the current public narrative.
+- `examples/`
+  Public teaching example for the current DMC + variational evidence + Wong-Wang pipeline.
+  - `examples/dmc_var_ww_minimal_pipeline.ipynb`
+    Executable notebook example.
+  - `examples/build_dmc_var_ww_minimal_pipeline.py`
+    Generator used to recreate the notebook and outputs.
+  - `examples/dmc_var_ww_minimal_pipeline.md`
+    Short run note for the example.
+  - `examples/outputs/dmc_var_ww_minimal/`
+    Saved predictions, metrics, and figures from the example run.
 - `artifacts/results/rt_model_dmc_var_ww/`
   Retained DMC + variational evidence + Wong-Wang result bundle for the public release.
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/`
