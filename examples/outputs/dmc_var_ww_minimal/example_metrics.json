@@ -1,0 +1,34 @@
+{
+  "data_source": "real CSV rows from data/age_groups_matched/20-29 with cached_stage1_logits",
+  "subject_selection": "small real-data panel selected for stable condition-level diagnostics",
+  "n_subjects": 3,
+  "age_group": "20-29",
+  "n_train": 4780,
+  "n_test": 1434,
+  "mean_human_rt": 0.5994964838027954,
+  "mean_model_rt": 0.6037928462028503,
+  "response_accuracy_model_vs_human_response": 0.4804741980474198,
+  "target_accuracy_human": 0.6276150627615062,
+  "target_accuracy_model": 0.6380753138075314,
+  "human_error_minus_correct_rt": -0.031136155128479004,
+  "model_error_minus_correct_rt": 0.00912553071975708,
+  "human_incongruent_minus_congruent_rt": 0.02998530864715576,
+  "model_incongruent_minus_congruent_rt": 0.04657328128814697,
+  "human_rt_p90": 0.7200000286102295,
+  "model_rt_p90": 0.6568853437900544,
+  "group_counts": {
+    "human": {
+      "correct_congruent": 450,
+      "correct_incongruent": 450,
+      "error_congruent": 204,
+      "error_incongruent": 330
+    },
+    "model": {
+      "correct_congruent": 465,
+      "correct_incongruent": 450,
+      "error_congruent": 189,
+      "error_incongruent": 330
+    }
+  },
+  "warnings": []
+}
