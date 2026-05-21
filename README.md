@@ -21,6 +21,10 @@ It shows that the DMC + variational evidence branch can produce the right kind o
 
 - `examples/dmc_var_ww_minimal_pipeline.ipynb`
   Public teaching example for the current DMC + variational evidence + Wong-Wang pipeline.
+- `examples/single_trial_rt_variability_probe.ipynb`
+  Diagnostic notebook for single-trial repeated stochastic forward probes of RT and choice variability.
+- `examples/build_single_trial_rt_variability_probe.py`
+  Generator used to recreate the single-trial diagnostic notebook and outputs.
 - `code/scripts/train_variational_ww_smoke.py`
 - `code/scripts/run_subject_level_dmc_var_ww.py`
 - `code/scripts/vgg_wongwang_lim.py`
@@ -33,6 +37,7 @@ It shows that the DMC + variational evidence branch can produce the right kind o
 
 - `artifacts/results/rt_model_dmc_var_ww/summary_smoke.md`
 - `artifacts/results/rt_model_dmc_var_ww/smoke_a5_s3_neg_drt/`
+- `artifacts/results/rt_model_dmc_var_ww/single_trial_rt_probe/`
 - `artifacts/results/rt_model_variational_ww_synthesis/var_ww_mechanism_memo.md`
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/`
 
@@ -46,8 +51,9 @@ Start with:
 2. `docs/current_results_and_limitations.md`
 3. `docs/public_update_notes.md`
 4. `examples/dmc_var_ww_minimal_pipeline.md`
-5. `artifacts/results/rt_model_dmc_var_ww/summary_smoke.md`
-6. `artifacts/results/rt_model_variational_ww_synthesis/var_ww_mechanism_memo.md`
+5. `examples/single_trial_rt_variability_probe.ipynb`
+6. `artifacts/results/rt_model_dmc_var_ww/summary_smoke.md`
+7. `artifacts/results/rt_model_variational_ww_synthesis/var_ww_mechanism_memo.md`
 
 ## Repository layout
 
@@ -65,8 +71,14 @@ Start with:
     Short run note for the example.
   - `examples/outputs/dmc_var_ww_minimal/`
     Saved predictions, metrics, and figures from the example run.
+  - `examples/single_trial_rt_variability_probe.ipynb`
+    Diagnostic notebook that compares condition-level RT distributions with repeated stochastic forward passes on fixed real trials.
+  - `examples/build_single_trial_rt_variability_probe.py`
+    Generator used to recreate the single-trial diagnostic notebook, tables, and figures.
 - `artifacts/results/rt_model_dmc_var_ww/`
   Retained DMC + variational evidence + Wong-Wang result bundle for the public release.
+  - `artifacts/results/rt_model_dmc_var_ww/single_trial_rt_probe/`
+    Saved tables and figures from the single-trial RT variability probe. This is a diagnostic mechanism probe, not a final trained-model result.
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/`
   Retained aggregated single-subject evidence tables for the public release.
 - `artifacts/archive_legacy_not_for_public/`
