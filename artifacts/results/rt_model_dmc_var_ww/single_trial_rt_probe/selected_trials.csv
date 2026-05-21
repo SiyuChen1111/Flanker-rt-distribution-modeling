@@ -1,0 +1,13 @@
+trial_id,subject_id,age_group,target,flanker,congruency,human_rt,human_response,human_correct,existing_model_pred_rt,existing_model_pred_choice,reason_selected
+test_000030,677,20-29,U,U,congruent,0.6899999976158142,U,True,0.5101951956748962,U,congruent human-correct trial
+test_000042,677,20-29,D,D,congruent,0.6240000128746033,L,False,0.6727591753005981,D,congruent human-error trial
+test_000151,677,20-29,L,U,incongruent,0.5709999799728394,L,True,0.4461529850959778,L,incongruent human-correct trial
+test_000498,677,20-29,D,L,incongruent,0.5630000233650208,L,False,0.40811020135879517,D,incongruent human-error trial
+test_021835,677,20-29,L,R,incongruent,0.10000000149011612,L,True,0.2856893837451935,L,human fast RT trial
+test_030475,677,20-29,U,U,congruent,1.190000057220459,U,True,0.4638395309448242,U,human slow RT trial
+test_009269,677,20-29,L,L,congruent,0.7329999804496765,L,True,0.27625545859336853,U,model likely fast-error trial
+test_016903,677,20-29,U,U,congruent,0.6570000052452087,U,True,0.9568046927452087,U,model likely slow-correct trial
+test_000187,677,20-29,R,R,congruent,0.5299999713897705,D,False,0.5670245885848999,R,additional target/flanker coverage
+test_000337,677,20-29,L,D,incongruent,0.5509999990463257,L,True,0.4497974216938019,L,additional target/flanker coverage
+test_000351,677,20-29,D,R,incongruent,0.6290000081062317,D,True,0.3708036541938782,D,additional target/flanker coverage
+test_000661,677,20-29,U,L,incongruent,0.6589999794960022,U,True,0.45584872364997864,U,additional target/flanker coverage
