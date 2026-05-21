@@ -54,7 +54,7 @@ if str(_SCRIPT_DIR) not in sys.path:
 
 from cache_vgg_stage2_features import load_stage1_model_with_metadata
 from project_paths import PROJECT_ROOT
-from stage1_semisup_evidence_sampler import (
+from stage1_evidence_sampler import (
     SemiSupervisedEvidenceSampler,
     Stage1EvidenceConfig,
 )

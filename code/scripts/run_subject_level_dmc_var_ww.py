@@ -38,7 +38,7 @@ from run_true_single_subject_feasibility import (
     _write_json,
     audit_baseline,
 )
-from stage1_semisup_evidence_sampler import SemiSupervisedEvidenceSampler, Stage1EvidenceConfig
+from stage1_evidence_sampler import SemiSupervisedEvidenceSampler, Stage1EvidenceConfig
 from train_age_group_semisup_spea import StimulusDataset, _build_behavior_balanced_subset, train_stage1_head
 from train_age_group_semisup_spea import train_stage1_head_from_cached_features
 from train_age_groups_efficient import (

@@ -19,7 +19,7 @@
 
 ## Key implementation points
 
-- `stage1_semisup_evidence_sampler.py` creates deterministic, variational, or dropout-based evidence samples.
+- `stage1_evidence_sampler.py` provides Stage-1 deterministic, variational, and MC-dropout evidence sampling.
 - `vgg_wongwang_lim.py` converts evidence into decision dynamics and readout.
 - `train_variational_ww_smoke.py` bridges sampled evidence into Wong-Wang training and evaluation.
 - `run_subject_level_dmc_var_ww.py` runs the subject-level DMC + variational workflow.

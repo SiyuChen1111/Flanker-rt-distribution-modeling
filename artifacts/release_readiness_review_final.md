@@ -34,7 +34,7 @@ Reason:
 - `code/scripts/train_variational_ww_smoke.py`
 - `code/scripts/run_subject_level_dmc_var_ww.py`
 - `code/scripts/vgg_wongwang_lim.py`
-- `code/scripts/stage1_semisup_evidence_sampler.py`
+- `code/scripts/stage1_evidence_sampler.py`
 - `code/scripts/analyze_subject_level_dmc_var_ww.py`
 - `code/scripts/cache_vgg_stage2_features.py`
 - `code/scripts/project_paths.py`
@@ -113,7 +113,7 @@ Reason:
 | `code/scripts/train_variational_ww_smoke.py` | `public_core` | `keep_public` | cited by README/docs and mechanism memo; core bridge into Wong-Wang | keep |
 | `code/scripts/run_subject_level_dmc_var_ww.py` | `public_core` | `keep_public` | cited by README/docs; runs subject-level DMC+Var workflow | keep |
 | `code/scripts/vgg_wongwang_lim.py` | `public_core` | `keep_public_but_polish` | core model file; contains a local test block with print output only | keep, optionally trim demo block later |
-| `code/scripts/stage1_semisup_evidence_sampler.py` | `public_core` | `keep_public` | core evidence sampler dependency | keep |
+| `code/scripts/stage1_evidence_sampler.py` | `public_core` | `keep_public` | core evidence sampler dependency; Stage-1 deterministic, variational, and MC-dropout evidence sampling | keep |
 | `code/scripts/analyze_subject_level_dmc_var_ww.py` | `public_core` | `keep_public` | public panel summarizer cited by docs | keep |
 | `code/scripts/cache_vgg_stage2_features.py` | `public_core` | `keep_public` | core support dependency for staged workflow | keep |
 | `code/scripts/train_dmc_var_ww_smoke.py` | `public_core` | `keep_public_but_polish` | core training script, but file header includes a local absolute path example | keep and polish header comments |
@@ -138,7 +138,7 @@ Reason:
 - `code/scripts/train_dmc_var_ww_smoke.py`
 - `code/scripts/run_subject_level_dmc_var_ww.py`
 - `code/scripts/vgg_wongwang_lim.py`
-- `code/scripts/stage1_semisup_evidence_sampler.py`
+- `code/scripts/stage1_evidence_sampler.py`
 - `code/scripts/analyze_subject_level_dmc_var_ww.py`
 - `code/scripts/cache_vgg_stage2_features.py`
 - `code/scripts/train_variational_ww_smoke.py`

@@ -22,7 +22,7 @@ from cache_vgg_stage2_features import load_stage1_model
 from project_paths import PROJECT_ROOT
 from train_age_groups_efficient import StimulusDataset, to_jsonable
 
-_STAGE1_MODULE = importlib.import_module("stage1_semisup_evidence_sampler")
+_STAGE1_MODULE = importlib.import_module("stage1_evidence_sampler")
 Stage1EvidenceConfig = _STAGE1_MODULE.Stage1EvidenceConfig
 SemiSupervisedEvidenceSampler = _STAGE1_MODULE.SemiSupervisedEvidenceSampler
 

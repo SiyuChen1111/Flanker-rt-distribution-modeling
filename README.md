@@ -24,7 +24,8 @@ It shows that the DMC + variational evidence branch can produce the right kind o
 - `code/scripts/train_variational_ww_smoke.py`
 - `code/scripts/run_subject_level_dmc_var_ww.py`
 - `code/scripts/vgg_wongwang_lim.py`
-- `code/scripts/stage1_semisup_evidence_sampler.py`
+- `code/scripts/stage1_evidence_sampler.py`
+  This module provides Stage-1 deterministic, variational, and MC-dropout evidence sampling.
 - `code/scripts/analyze_subject_level_dmc_var_ww.py`
 - `code/scripts/train_dmc_var_ww_smoke.py`
 

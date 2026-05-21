@@ -152,7 +152,7 @@ The Phase 11 finding that WW noise/threshold can be pushed from no-error to erro
 |---|---|---|
 | Var→WW bridge model | `code/scripts/train_variational_ww_smoke.py` | `VariationalWWModel`, `train_variational_ww` |
 | Wong-Wang dynamics | `code/scripts/vgg_wongwang_lim.py` | `WongWangMultiClassDecision` |
-| Variational evidence sampler | `code/scripts/stage1_semisup_evidence_sampler.py` | `SemiSupervisedEvidenceSampler`, `VariationalEvidenceHead` |
+| Variational evidence sampler | `code/scripts/stage1_evidence_sampler.py` | `SemiSupervisedEvidenceSampler`, `VariationalEvidenceHead` |
 | Readout functions | `code/scripts/vgg_wongwang_lim.py` | `compute_soft_index_readout`, `compute_rt_readout` |
 | Behavioral evaluation | `code/scripts/train_age_groups_efficient.py` | `evaluate_joint_behavior` |
 | SPEA baseline (for comparison) | `code/scripts/stage2_spea_backend.py` | `SemiSupervisedSPEA` |
