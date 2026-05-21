@@ -21,6 +21,8 @@ It shows that the DMC + variational evidence branch can produce the right kind o
 
 - `examples/dmc_var_ww_minimal_pipeline.ipynb`
   Public teaching example for the current DMC + variational evidence + Wong-Wang pipeline.
+- `examples/toy_recurrent_ww_dmc_demo.ipynb`
+  Small toy notebook showing how recurrent Wong-Wang competition can amplify early DMC flanker capture into a fast error.
 - `examples/single_trial_rt_variability_probe.ipynb`
   Diagnostic notebook for single-trial repeated stochastic forward probes of RT and choice variability.
 - `examples/build_single_trial_rt_variability_probe.py`
@@ -51,9 +53,10 @@ Start with:
 2. `docs/current_results_and_limitations.md`
 3. `docs/public_update_notes.md`
 4. `examples/dmc_var_ww_minimal_pipeline.md`
-5. `examples/single_trial_rt_variability_probe.ipynb`
-6. `artifacts/results/rt_model_dmc_var_ww/summary_smoke.md`
-7. `artifacts/results/rt_model_variational_ww_synthesis/var_ww_mechanism_memo.md`
+5. `examples/toy_recurrent_ww_dmc_demo.ipynb`
+6. `examples/single_trial_rt_variability_probe.ipynb`
+7. `artifacts/results/rt_model_dmc_var_ww/summary_smoke.md`
+8. `artifacts/results/rt_model_variational_ww_synthesis/var_ww_mechanism_memo.md`
 
 ## Repository layout
 
@@ -69,6 +72,8 @@ Start with:
     Generator used to recreate the notebook and outputs.
   - `examples/dmc_var_ww_minimal_pipeline.md`
     Short run note for the example.
+  - `examples/toy_recurrent_ww_dmc_demo.ipynb`
+    Small teaching notebook for the recurrent competition fast-error mechanism.
   - `examples/outputs/dmc_var_ww_minimal/`
     Saved predictions, metrics, and figures from the example run.
   - `examples/single_trial_rt_variability_probe.ipynb`
