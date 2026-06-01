@@ -1,0 +1,1 @@
+Representative subset diagnostic analysis. Not full age-group conclusion. Human and model behavior are compared for 5,000 trials per age group; model RT includes fitted t0 parameters rather than post-hoc plotting shifts. WW panels show internal target, flanker, and recovery dynamics for the best finite candidate model.

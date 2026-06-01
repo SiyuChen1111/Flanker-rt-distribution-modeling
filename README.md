@@ -42,6 +42,8 @@ It shows that the DMC + variational evidence branch can produce the right kind o
 - `artifacts/results/rt_model_dmc_var_ww/single_trial_rt_probe/`
 - `artifacts/results/rt_model_variational_ww_synthesis/var_ww_mechanism_memo.md`
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/`
+- `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/`
+  Current internal results bundle for the representative extreme-age R5 update. This path is kept under `artifacts/results/` because it is now treated as a model-progress result bundle rather than a diagnostics-only folder.
 
 These are the only result paths intentionally retained as the public evidence spine for the current mechanism-test release.
 
@@ -84,6 +86,10 @@ Start with:
   Retained DMC + variational evidence + Wong-Wang result bundle for the public release.
   - `artifacts/results/rt_model_dmc_var_ww/single_trial_rt_probe/`
     Saved tables and figures from the single-trial RT variability probe. This is a diagnostic mechanism probe, not a final trained-model result.
+- `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/`
+  Current internal result bundle for the representative extreme-age subset workflow, including the retained `best_model_R5_combined_best` package and its follow-up analyses.
+- `artifacts/results/diagnostics/`
+  Diagnostic and exploratory side-results that are not the main retained result bundle.
 - `artifacts/results/repro_legacy_interim/true_single_subject_feasibility_rt_response_only/reaggregated/`
   Retained aggregated single-subject evidence tables for the public release.
 - `artifacts/archive_legacy_not_for_public/`
