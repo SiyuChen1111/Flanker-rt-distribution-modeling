@@ -1,0 +1,1 @@
+*Note.* White background, APA-style labeling, and colorblind-friendly palette were used. Solid lines show human data and dashed lines show model data. This figure is for the representative subset and should be read as an exploratory model-summary figure.
