@@ -1,0 +1,8 @@
+candidate_id,n_seeds,key_threshold_pass_rate,continuous_improvement_rate,mean_fold_improvement_rate,direction_stability_rate,mean_fast_error_gap,mean_young_incongruent_median_gap_s,mean_continuous_joint_score,seed_count_pass,stability_80pct_pass,estimability_status,diagnostic_threshold_status,confirmatory_eligible,claim_level
+current__factorial_joint_first_passage,10,0.0,1.0,0.325,0.0,0.20362800669879552,0.19693861165274354,0.25509343981622745,True,False,ESTIMABLE,FAIL,False,internal diagnostic
+current__factorial_gap_gate,10,0.0,0.0,0.0,0.0,0.16067124556215578,0.20749224081215592,0.2813692419567324,True,False,ESTIMABLE,FAIL,False,internal diagnostic
+saved_current_gate_execution_reference,10,0.0,0.5,0.25,0.0,0.1747624270275411,0.20023712074748906,0.28303778047365136,True,False,ESTIMABLE,FAIL,False,internal diagnostic
+upstream_selected__snapshot_nonaccum_exploratory,10,0.0,0.0,0.0,0.0,0.531893832672557,0.0074197267404704555,0.4425971136753084,True,False,ESTIMABLE,FAIL,False,internal diagnostic
+current__snapshot_nonaccum_exploratory,10,0.0,0.0,0.0,0.0,0.539430778883631,0.006754148966334095,0.45492247917982065,True,False,ESTIMABLE,FAIL,False,internal diagnostic
+upstream_selected__factorial_joint_first_passage,10,0.0,0.0,0.25,0.0,0.1347270210887105,0.27439548001285974,0.4551365041697208,True,False,ESTIMABLE,FAIL,False,internal diagnostic
+upstream_selected__factorial_gap_gate,10,0.0,0.0,0.25,0.0,0.13273004088307178,0.27471015496909923,0.4760565273395477,True,False,ESTIMABLE,FAIL,False,internal diagnostic

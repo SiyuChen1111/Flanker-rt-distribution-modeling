@@ -1,0 +1,5 @@
+metric,source,value,reference,absolute_deviation
+young_incongruent_fastest_equal_count_error_rate,human,0.15955232987422893,0.16,0.00044767012577107135
+young_incongruent_fastest_equal_count_error_rate,model,0.3040788426535408,0.304,7.884265354080044e-05
+young_incongruent_pooled_median_rt_s,human,0.6039999723434448,0.604,2.7656555157129503e-08
+young_incongruent_pooled_median_rt_s,model,0.8292600699356161,0.829,0.000260069935616114

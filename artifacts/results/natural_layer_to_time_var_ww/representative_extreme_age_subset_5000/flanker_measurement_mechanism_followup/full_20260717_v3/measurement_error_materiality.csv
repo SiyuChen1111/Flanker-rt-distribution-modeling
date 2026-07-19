@@ -1,0 +1,4 @@
+scheme,young_incongruent_fast_error_gap,young_incongruent_median_rt_gap_s,fast_error_gap_reduction,median_rt_gap_reduction,measurement_material,fast_within_sampling_tolerance,median_within_sampling_tolerance
+raw,0.1445265127793118,0.2020420467908322,0.0,0.0,False,False,False
+presentation_floor_60hz,0.14811724278236998,0.19993055555555558,-0.02484478407460866,0.010450751557979365,False,False,False
+combined_60hz_125hz,0.14136228447512406,0.20451388888888883,0.02189375667715332,-0.012234295471257317,False,False,False

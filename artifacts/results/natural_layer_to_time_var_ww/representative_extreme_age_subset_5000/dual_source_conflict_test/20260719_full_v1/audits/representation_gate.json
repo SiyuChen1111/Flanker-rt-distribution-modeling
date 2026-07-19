@@ -1,0 +1,18 @@
+{
+  "source_separation_gate_passed": true,
+  "reconstruction_gate_passed": true,
+  "representation_audit_passed": true,
+  "gate_definition": {
+    "source": "at least one non-final layer >= .90 with positive expected-direction margin for both target-only and flanker-only",
+    "reconstruction": "mean layer correlation >= .99 and minimum layer argmax agreement >= .99"
+  },
+  "gate_revision_status": "fixed after smoke calibration and before the full-sample audit",
+  "full_cache_check": {
+    "available": true,
+    "n_matched": 9990,
+    "mean_layer_correlation": 0.9999999996856254,
+    "min_layer_correlation": 0.9999999992420523,
+    "max_abs_error": 0.83843994140625,
+    "min_layer_argmax_agreement": 1.0
+  }
+}
