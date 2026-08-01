@@ -22,6 +22,8 @@ The current best candidate, `R5_combined_best`, combines group-specific timing v
 
 The model still overestimates accuracy and does not fully match human correct/error patterns. The results should therefore be read as evidence about a promising mechanism, not as a completed human RT model.
 
+The latest supervisor follow-up diagnostic is saved in `artifacts/results/r5_supervisor_followup/` and can be regenerated with `code/scripts/run_r5_supervisor_followup.py`. It recomputes CAF/CRF from raw trial-level rows using actual RT coordinates, audits the R5 state/readout path, and separates fixed-time `S(t)` distributions from first-passage-time behavior.
+
 ## Earlier mechanism branch
 
 The earlier public mechanism branch is still retained because it explains the foundation of the project:
@@ -40,8 +42,9 @@ Start with the current best-model materials:
 1. `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/README_best_model_R5_combined_best.md`
 2. `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/summaries/representative_extreme_age_diagnostic_summary.md`
 3. `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/summaries/representative_fitting_summary.md`
-4. `docs/current_results_and_limitations.md`
-5. `docs/model_framework_summary.md`
+4. `docs/r5-supervisor-followup.md`
+5. `docs/current_results_and_limitations.md`
+6. `docs/model_framework_summary.md`
 
 Then read the teaching and mechanism examples:
 
@@ -60,6 +63,7 @@ Current representative extreme-age workflow:
 - `code/scripts/build_representative_extreme_age_vgg_cache.py`
 - `code/scripts/run_representative_extreme_age_subset_fitting.py`
 - `code/scripts/make_representative_extreme_age_figures.py`
+- `code/scripts/run_r5_supervisor_followup.py`
 
 Earlier DMC + variational evidence + Wong-Wang workflow:
 
@@ -80,12 +84,26 @@ Examples:
 
 ## Key results
 
+Results directory navigation:
+
+- `artifacts/results/README.md`
+- `artifacts/results/ARTIFACT_DOCS_INDEX.md`
+- `artifacts/results/artifact_docs_inventory.csv`
+
 Current best-model result bundle:
 
 - `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/`
 - `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/results/model_comparison_all_models.csv`
 - `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/results/best_model_group_metrics.csv`
 - `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/figures_publication/representative_extreme_age_diagnostic_figure.png`
+
+Supervisor follow-up diagnostic bundle:
+
+- `artifacts/results/r5_supervisor_followup/01_reproducibility_and_active_config_audit.md`
+- `artifacts/results/r5_supervisor_followup/02_CAF_actual_RT.png`
+- `artifacts/results/r5_supervisor_followup/03_CRF_actual_RT.png`
+- `artifacts/results/r5_supervisor_followup/05_first_passage_distribution_summary.csv`
+- `artifacts/results/r5_supervisor_followup/10_supervisor_response_summary_chinese.md`
 
 Earlier retained mechanism-test results:
 

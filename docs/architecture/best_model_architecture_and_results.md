@@ -1,5 +1,7 @@
 # Best Model Architecture, Implementation Flow, Results, and Limitations
 
+> Current status: this document preserves an earlier architecture/result snapshot. For the current retained R5 representative-subset model and the latest supervisor follow-up diagnostics, start with `README.md`, `docs/model_framework_summary.md`, `docs/current_results_and_limitations.md`, and `docs/r5-supervisor-followup.md`.
+
 **Date:** 2026-05-06 (updated with Phase 15 Var→WW synthesis + MC Dropout improvement plan)
 **Scope:** Current best-performing model in the VGG → Wong-Wang → RT prediction pipeline for LIM/Flanker task
 **Status:** Live document — update when a new configuration clears promotion gates

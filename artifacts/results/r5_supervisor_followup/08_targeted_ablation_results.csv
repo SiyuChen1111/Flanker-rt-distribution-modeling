@@ -1,0 +1,7 @@
+ablation,status,interpretation
+R5 baseline,computed from existing outputs,Baseline used for all diagnostics.
+Evidence calibration only,not rerun,Recommended as next targeted ablation after evidence-origin errors are checked.
+Accumulator dynamics only,not rerun,Threshold/noise are implicated but should be tested separately.
+Readout only,not rerun,Hard and final choice disagreement should be tested before changing readout.
+Training objective only,not rerun,Not justified until active loss audit is complete.
+Non-decision-time restriction,not rerun,High priority because t0_sd appears to carry much RT shape.
