@@ -539,15 +539,15 @@ class DiffDecisionMultiClass(Function):
     def forward(ctx, trajectory, dsdt_trajectory, dt, max_time):
         mask = trajectory > 0                                 # [B, T, C]
         decision_times = mask.float().argmax(dim=1).float()   # [B, C]
-        no_cross_any = mask.amax(dim=1).amax(dim=1) == 0      # [B] – no class ever crossed
-        decision_times[no_cross_any] = max_time - 1
-        ctx.save_for_backward(dsdt_trajectory, decision_times, no_cross_any)
+        no_cross_class = ~mask.any(dim=1)                     # [B, C] – class never crossed
+        decision_times[no_cross_class] = max_time - 1
+        ctx.save_for_backward(dsdt_trajectory, decision_times, no_cross_class)
         ctx.dt = float(dt)
         return decision_times * dt
 
     @staticmethod
     def backward(ctx, *grad_outputs):
-        dsdt_trajectory, decision_times, no_cross_any = ctx.saved_tensors
+        dsdt_trajectory, decision_times, no_cross_class = ctx.saved_tensors
         dt = ctx.dt
         grads = torch.zeros_like(dsdt_trajectory)
         grad_output = grad_outputs[0]
@@ -576,8 +576,8 @@ class DiffDecisionMultiClass(Function):
         # chain-rule: forward returns decision_times * dt
         grads = grads * (grad_output.unsqueeze(1).expand_as(grads) * dt)
 
-        # zero gradients for trials where no class ever crossed
-        grads[no_cross_any] = 0.0
+        # A clamped fallback time carries no crossing-time gradient.
+        grads = grads.masked_fill(no_cross_class.unsqueeze(1), 0.0)
 
         return grads, None, None, None
 
@@ -594,9 +594,19 @@ class WongWangMultiClassDecision(nn.Module):
         dt: Time step in ms
         time_steps: Total simulation time steps
         t_stimulus: Duration of stimulus presentation
+        normalize_competition: Keep total off-diagonal inhibition approximately
+            constant when the number of alternatives changes. Disabled by default
+            to preserve existing checkpoints and result packages.
     """
     
-    def __init__(self, n_classes: int = 4, dt: int = 10, time_steps: int = 500, t_stimulus: int = 500):
+    def __init__(
+        self,
+        n_classes: int = 4,
+        dt: int = 10,
+        time_steps: int = 500,
+        t_stimulus: int = 500,
+        normalize_competition: bool = False,
+    ):
         super().__init__()
         self.n_classes = n_classes
         
@@ -606,7 +616,13 @@ class WongWangMultiClassDecision(nn.Module):
         self.gamma = nn.Parameter(torch.tensor(0.641, dtype=torch.float32), requires_grad=False)
         self.tau_s = nn.Parameter(torch.tensor(100.0, dtype=torch.float32), requires_grad=False)
         
-        self.J_matrix = nn.Parameter(torch.ones(n_classes, n_classes, dtype=torch.float32) * -0.0497, requires_grad=True)
+        cross_inhibition = -0.0497
+        if normalize_competition and n_classes > 1:
+            cross_inhibition /= n_classes - 1
+        self.J_matrix = nn.Parameter(
+            torch.ones(n_classes, n_classes, dtype=torch.float32) * cross_inhibition,
+            requires_grad=True,
+        )
         self.J_matrix.data[range(n_classes), range(n_classes)] = 0.2609
         self.J_ext = nn.Parameter(torch.tensor(0.0156, dtype=torch.float32), requires_grad=True)
         self.I_0 = nn.Parameter(torch.tensor(0.3255, dtype=torch.float32), requires_grad=True)
