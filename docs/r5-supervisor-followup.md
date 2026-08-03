@@ -16,11 +16,29 @@ From the repository root:
 
 ```bash
 python code/scripts/run_r5_supervisor_followup.py
+python code/scripts/run_ww_diffdecision_core_audit.py --mode full
+python code/scripts/run_r5_supervisor_round2.py
+python code/scripts/run_real_vgg_target_flanker_dynamics_audit.py
+python code/scripts/run_r5_choice_rule_alignment_audit.py
+python code/scripts/run_r5_choice_coupled_schedule_optimization.py
+python code/scripts/plot_r5_rt_distribution_kde.py
+python code/scripts/plot_r5_caf_and_delta_curves.py
 ```
 
-The script writes all outputs to:
+The first script writes its outputs to:
 
 `artifacts/results/r5_supervisor_followup/`
+
+The additional scripts write new bundles rather than overwriting the original follow-up:
+
+- `artifacts/results/ww_diffdecision_core_audit_20260802/`
+- `artifacts/results/r5_supervisor_round2_20260802/`
+- `artifacts/results/r5_real_vgg_target_flanker_audit_20260803/`
+- `artifacts/results/r5_choice_rule_alignment_audit_20260803/`
+- `artifacts/results/r5_choice_coupled_refit_20260803/`
+- `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/`
+- `artifacts/results/r5_rt_distribution_kde_20260803/`
+- `artifacts/results/r5_caf_delta_curves_20260803/`
 
 For the broader generated-results tree, use `artifacts/results/ARTIFACT_DOCS_INDEX.md` and `artifacts/results/artifact_docs_inventory.csv` before treating any older artifact Markdown as current evidence.
 
@@ -43,6 +61,23 @@ For the broader generated-results tree, use `artifacts/results/ARTIFACT_DOCS_IND
 | `10_supervisor_response_summary_chinese.md` | Short Chinese response organized around the supervisor's three questions |
 | `11_supervisor_response_summary_english.md` | Short English response |
 
+## Second-round supporting outputs
+
+| File | Purpose |
+|---|---|
+| `artifacts/results/r5_supervisor_round2_20260802/01_CAF_explicit_quantile_RT_ticks.pdf` | Human and model CAF panels with their own actual median-RT ticks |
+| `artifacts/results/r5_supervisor_round2_20260802/02_CRF_explicit_quantile_RT_ticks.pdf` | Human and model CRF panels with their own actual median-RT ticks |
+| `artifacts/results/r5_supervisor_round2_20260802/03_time_scaling_preserves_shape.pdf` | Demonstrates shape-preserving multiplicative RT rescaling |
+| `artifacts/results/r5_supervisor_round2_20260802/04_improved_model_speed_accuracy.pdf` | Compares static and target-recovery synthetic evidence schedules |
+| `artifacts/results/r5_supervisor_round2_20260802/summary.md` | Interpretation and limits of the second-round checks |
+| `artifacts/results/ww_diffdecision_core_audit_20260802/summary.md` | Isolated two-/four-choice core audit and no-crossing correction |
+| `artifacts/results/r5_real_vgg_target_flanker_audit_20260803/summary.md` | Separates real VGG layer evidence, scheduled WW input, state recovery, and RT/choice readout |
+| `artifacts/results/r5_choice_rule_alignment_audit_20260803/summary.md` | Quantifies disagreement between whole-trajectory choice and the winner at the RT readout step |
+| `artifacts/results/r5_choice_coupled_refit_20260803/summary.md` | Shows what happens when the corrected rule is imposed before retiming the evidence schedule |
+| `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/summary.md` | Current exploratory choice-coupled timing result |
+| `artifacts/results/r5_rt_distribution_kde_20260803/observed_vs_model_rt_kde.pdf` | Human/model RT densities by congruency and age group |
+| `artifacts/results/r5_caf_delta_curves_20260803/current_model_delta_rt_human_vs_model.pdf` | Correct-trial congruency RT cost across participant-level RT bins |
+
 ## Verified checks
 
 - CAF uses median RT within each quantile bin, not relabelled bin numbers.
@@ -51,13 +86,19 @@ For the broader generated-results tree, use `artifacts/results/ARTIFACT_DOCS_IND
 - CRF row probabilities sum to 1 within numerical tolerance.
 - Incongruent CRF `p_target` matches the corresponding incongruent CAF accuracy.
 - Fixed-time `S_i(t)` distributions are analyzed separately from first-passage RT distributions.
+- Never-crossed channels are no longer recorded as zero-time responses; the stored deadline value is a censoring sentinel and is separated by a crossing flag.
+- Separate human/model panels make each distribution's actual RT-bin coordinates readable without overlapping tick labels.
 
 ## Current interpretation
 
-The current results suggest that the R5 final RT shape depends strongly on non-decision-time variability. The hard Wong-Wang first-crossing times are more compressed than final RT, so the main bottleneck is likely in the division of work among evidence scaling, readout threshold/margin, accumulator noise, and t0 variability.
+The follow-up sequence now supports a more specific diagnosis. The retained baseline's RT and choice used different time windows: 26.5% of all trials receive different choices when the winner is evaluated at the stated RT step, and every disagreement is incongruent. Directly correcting that rule exposes a timing bottleneck because late target recovery arrives too close to the simulation deadline.
 
-The excessive incongruent-error pattern is not currently best explained by a global response-label mapping failure. The recomputed CRF passes the basic mapping checks, while the error decomposition points more toward evidence-origin and early readout/accumulation issues.
+The current exploratory solution keeps the real VGG evidence and retained Wong-Wang parameters, couples choice to RT, and compresses the evidence schedule. All 10,000 trials then cross, and overall accuracy, incongruent accuracy, mean RT, and incongruent CAF are close to the representative human subset. This shows that the existing VGG target-recovery signal is computationally sufficient after retiming; no additional handcrafted conflict-control module is required for this result.
+
+The improvement is incomplete. KDE plots show model RT tails that are too short, and delta curves show an incongruent RT cost several times larger than the human effect. The current schedule was selected and assessed on the same trials, with only four older participants. The result is therefore an in-sample mechanism diagnostic, not a validated age model.
 
 ## Important unresolved issue
 
 The retained R5 package does not include a standalone neural-network checkpoint or complete active training-loss configuration. Therefore, training-objective conclusions remain unresolved until the exact active loss weights and checkpoint provenance are fully traced.
+
+The illustrative RT scale factor in the second-round figure is not an estimated parameter. Likewise, the normalized four-choice competition ablation is not adopted because it improves crossing at the cost of target accuracy. The next priority is held-out, participant-balanced evaluation of the fixed choice-coupled procedure, including CAF, KDE/tails, delta curves, crossing coverage, and four-direction errors.

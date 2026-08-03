@@ -531,8 +531,10 @@ class DiffDecisionMultiClass(Function):
     = -1 / dsdt at the crossing point.  The forward returns crossing_time * dt
     so the backward multiplies through by dt for correct chain-rule scaling.
 
-    Batch elements where *no* class crosses the threshold receive zero
-    gradient (the clamped fallback index carries no signal).
+    Each class that does not cross the threshold is assigned the final
+    simulation index and receives zero crossing-time gradient. Downstream
+    analyses must use the trajectory-derived crossing flag to distinguish
+    this censoring sentinel from an observed decision time.
     """
 
     @staticmethod

@@ -4,18 +4,20 @@ This is the top-level navigation layer for Markdown documents under `artifacts/r
 
 ## Reading Order
 
-1. Current R5 supervisor follow-up: `r5_supervisor_followup/10_supervisor_response_summary_chinese.md` and `r5_supervisor_followup/09_full_technical_report.md`.
-2. Current retained R5 package: `natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/README_best_model_R5_combined_best.md`.
-3. Current R5 result tables and figures inside `natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/results/` and `figures_publication/`.
-4. Supporting representative-subset diagnostics under `natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/`.
-5. Historical or exploratory materials only when tracing provenance.
+1. Current interpretation: `r5_choice_coupled_schedule_optimization_20260803/summary.md`.
+2. Current RT-shape and congruency figures: `r5_rt_distribution_kde_20260803/` and `r5_caf_delta_curves_20260803/`.
+3. Readout correction: `r5_choice_rule_alignment_audit_20260803/summary.md` and `r5_choice_coupled_refit_20260803/summary.md`.
+4. Real VGG target/flanker audit: `r5_real_vgg_target_flanker_audit_20260803/summary.md`.
+5. Supporting supervisor and core checks: `r5_supervisor_followup/`, `r5_supervisor_round2_20260802/`, and `ww_diffdecision_core_audit_20260802/`.
+6. Retained legacy R5 baseline: `natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/README_best_model_R5_combined_best.md`.
+7. Historical or exploratory materials only when tracing provenance.
 
 ## Classification Summary
 
 | Category | Count | Meaning |
 |---|---:|---|
-| `current_spine` | 19 | Current promoted or supervisor-facing R5 documentation. |
-| `current_supporting` | 115 | Current representative-subset context that supports the R5 branch. |
+| `current_spine` | 20 | Current promoted or supervisor-facing R5 documentation. |
+| `current_supporting` | 125 | Current representative-subset and controlled-mechanism context that supports the R5 branch. |
 | `exploratory_or_side_diagnostic` | 118 | Side diagnostics and ablations; useful context, not promoted final evidence. |
 | `legacy_or_historical_reference` | 103 | Historical outputs retained for provenance; do not treat as current truth. |
 | `unclassified_reference` | 4 | Older or root-level references that require reader caution. |
@@ -29,6 +31,13 @@ This is the top-level navigation layer for Markdown documents under `artifacts/r
 | `organized` | 56 |
 | `repro_legacy_interim` | 34 |
 | `r5_supervisor_followup` | 10 |
+| `r5_caf_delta_curves_20260803` | 1 |
+| `r5_choice_coupled_refit_20260803` | 2 |
+| `r5_choice_coupled_schedule_optimization_20260803` | 2 |
+| `r5_choice_rule_alignment_audit_20260803` | 1 |
+| `r5_real_vgg_target_flanker_audit_20260803` | 2 |
+| `r5_rt_distribution_kde_20260803` | 1 |
+| `r5_supervisor_round2_20260802` | 1 |
 | `premature_readout_evidence_schedule_optimization` | 8 |
 | `flanker_suppression_full_ww_validation` | 7 |
 | `rtshape_experiment` | 4 |
@@ -42,6 +51,7 @@ This is the top-level navigation layer for Markdown documents under `artifacts/r
 | `.` | 1 |
 | `model_aligned_20_29` | 1 |
 | `rt_model_variational_ww_synthesis` | 1 |
+| `ww_diffdecision_core_audit_20260802` | 1 |
 
 ## Duplicate-Suffix Copies
 

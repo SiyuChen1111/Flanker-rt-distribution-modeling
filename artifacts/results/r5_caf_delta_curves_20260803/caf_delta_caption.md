@@ -1,0 +1,3 @@
+# Figures | Current choice-coupled model CAF and RT delta curves
+
+CAF curves use five equally sized RT bins within age group, congruency, and source; x-coordinates are the observed median RT in each bin. Delta curves use correct trials and are constructed within participant by separately binning congruent and incongruent RTs, then plotting their mean RT against incongruent-minus-congruent RT. Delta points are participant means and error bars are standard errors across participants (young n = 12; older n = 4). Human and model bins are formed from their respective RT distributions. All 10,000 model trials crossed the decision threshold; no censoring sentinels were included. These are exploratory representative-subset results, not held-out validation.

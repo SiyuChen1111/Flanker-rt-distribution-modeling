@@ -1,0 +1,3 @@
+# Figure | Observed and model-predicted RT distributions
+
+Kernel density estimates compare observed human RTs (solid) with choice-coupled model predictions (dashed) for congruent (blue) and incongruent (orange) trials. Panels show young and older adults. KDE bandwidths were estimated robustly within each age group and held constant across conditions and sources. All trials crossed the decision threshold; no censoring sentinels were included. Densities were computed from all RTs, while the display is limited to 0.1–2.0 s; every plotted series retains at least 99.0% of observations within this window.

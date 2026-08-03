@@ -39,6 +39,11 @@ T0_SD_GRID = [0.00, 0.03, 0.06, 0.09, 0.12, 0.15, 0.20]
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Run representative extreme-age finite model comparison.")
     p.add_argument("--output-dir", default=str(OUT_DIR))
+    p.add_argument(
+        "--input-dir",
+        default=None,
+        help="Optional source directory for manifests and evidence cache; defaults to output-dir.",
+    )
     p.add_argument("--device", choices=["cpu", "cuda", "mps"], default="cpu")
     p.add_argument("--time-steps", type=int, default=80)
     p.add_argument("--dt-ms", type=int, default=10)
@@ -158,6 +163,8 @@ def metrics_for_group(df: pd.DataFrame, outputs: Dict[str, np.ndarray], dt_ms: i
         "human_accuracy": float(human_correct.mean()),
         "model_accuracy": float(correct.mean()),
         "human_choice_agreement": float((df["pred_choice"].to_numpy() == df["response_label"].to_numpy()).mean()),
+        "model_crossing_rate": float(df["crossed"].astype(bool).mean()),
+        "model_no_crossing_rate": float((~df["crossed"].astype(bool)).mean()),
         "human_incongruent_error_rate": float((~human_correct[incong]).mean()),
         "model_incongruent_error_rate": float((~correct[incong]).mean()),
         "human_mean_rt": float(np.mean(hrt)),
@@ -195,13 +202,22 @@ def score_summary(summary: pd.DataFrame) -> Dict[str, float]:
     score_caf = float(summary["caf_binwise_rmse"].mean())
     score_accuracy = float((summary["model_accuracy"] - summary["human_accuracy"]).abs().mean())
     score_mechanism = float(np.nanmean(np.maximum(0.0, -summary["target_recovery_time_error_minus_correct"].fillna(0).to_numpy())))
-    total = 2.0 * score_rt_quantile + 1.5 * score_caf + 1.0 * score_accuracy + 0.25 * score_mechanism
+    crossing_shortfall = np.maximum(0.95 - summary["model_crossing_rate"].to_numpy(float), 0.0)
+    score_crossing_coverage = float(np.mean(crossing_shortfall))
+    crossing_gate_passed = bool(np.all(crossing_shortfall <= 1e-12))
+    unconstrained_total = 2.0 * score_rt_quantile + 1.5 * score_caf + 1.0 * score_accuracy + 0.25 * score_mechanism
+    # A deadline sentinel is censoring, not an observed RT. Prevent a candidate
+    # with extensive deadline fallback from winning by fitting the RT ceiling.
+    total = unconstrained_total if crossing_gate_passed else unconstrained_total + 10.0 + score_crossing_coverage
     return {
         "score_total": total,
+        "score_total_unconstrained": unconstrained_total,
         "score_rt_quantile": score_rt_quantile,
         "score_caf": score_caf,
         "score_accuracy": score_accuracy,
         "score_mechanism": score_mechanism,
+        "score_crossing_coverage": score_crossing_coverage,
+        "crossing_gate_passed": crossing_gate_passed,
     }
 
 
@@ -278,13 +294,14 @@ def parameter_rows(model_name: str, groups: Iterable[str], t0: Dict[str, float],
 
 def main() -> None:
     args = parse_args()
-    root = Path(args.output_dir)
-    fit_dir = root / "fitting"
-    sum_dir = root / "summaries"
+    output_root = Path(args.output_dir)
+    input_root = Path(args.input_dir) if args.input_dir else output_root
+    fit_dir = output_root / "fitting"
+    sum_dir = output_root / "summaries"
     fit_dir.mkdir(parents=True, exist_ok=True)
     sum_dir.mkdir(parents=True, exist_ok=True)
-    require_evidence_gate(root)
-    cache = load_trial_cache(root)
+    require_evidence_gate(input_root)
+    cache = load_trial_cache(input_root)
     active_groups = sorted(set(cache["analysis_group"].astype(str)))
 
     all_trials: List[pd.DataFrame] = []

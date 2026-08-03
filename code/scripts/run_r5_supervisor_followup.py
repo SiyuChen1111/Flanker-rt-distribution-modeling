@@ -412,7 +412,18 @@ def reconstruct_r5() -> Tuple[pd.DataFrame, Dict[str, np.ndarray], Dict[str, np.
         base["pred_choice"] = out["pred_choice"]
         base["pred_rt"] = out["pred_rt"]
         base["model_correct"] = base["pred_choice"].astype(int).eq(base["target_label"].astype(int))
-        base = apply_readout(base.assign(evidence_gain=p["evidence_gain"], threshold=p["threshold"]), out, cfg=cfg, threshold=p["threshold"], dt_ms=DT_MS, t0_seconds=0.0)
+        # The retained R5 artifact used the historical whole-trajectory choice.
+        # Keep it explicit here so this reconstruction remains reproducible even
+        # though fresh model fits now couple choice to the RT readout step.
+        base = apply_readout(
+            base.assign(evidence_gain=p["evidence_gain"], threshold=p["threshold"]),
+            out,
+            cfg=cfg,
+            threshold=p["threshold"],
+            dt_ms=DT_MS,
+            t0_seconds=0.0,
+            choice_rule="trajectory_max_choice",
+        )
         rng = np.random.default_rng(20260530 + (0 if age.startswith("older") else 1))
         t0_noise = np.clip(rng.normal(0, p["t0_sd"], size=len(base)), -2.5 * p["t0_sd"], 2.5 * p["t0_sd"])
         base["decision_time"] = base["pred_rt"]

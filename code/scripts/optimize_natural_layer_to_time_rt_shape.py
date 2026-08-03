@@ -172,7 +172,7 @@ def apply_readout(
     threshold: float,
     dt_ms: int,
     t0_seconds: float,
-    choice_rule: str = "trajectory_max_choice",
+    choice_rule: str = "winner_at_readout",
 ) -> pd.DataFrame:
     traj = np.asarray(outputs["trajectory"], dtype=np.float32)
     evidence = np.asarray(outputs["evidence_traj"], dtype=np.float32)
@@ -218,6 +218,10 @@ def apply_readout(
         no_cross = ~pass_mask.any(axis=1)
         readout_step[no_cross] = time_steps - 1
 
+    valid_choice_rules = {"winner_at_readout", "trajectory_max_choice"}
+    if choice_rule not in valid_choice_rules:
+        raise ValueError(f"Unknown choice_rule: {choice_rule}. Expected one of {sorted(valid_choice_rules)}")
+
     out = base_df.copy()
     if choice_rule == "winner_at_readout":
         out["pred_choice"] = winner_idx[np.arange(n), readout_step]
@@ -225,6 +229,8 @@ def apply_readout(
         out["pred_choice"] = base_df["pred_choice"].to_numpy(dtype=np.int64)
     out["pred_rt"] = readout_step.astype(np.float32) * (dt_ms / 1000.0) + float(t0_seconds)
     out["decision_time"] = out["pred_rt"] - float(t0_seconds)
+    out["readout_step"] = readout_step
+    out["crossed"] = ~no_cross if cfg.readout_rule != "hazard_readout" else np.ones(n, dtype=bool)
     out["model_correct"] = out["pred_choice"].to_numpy(dtype=np.int64) == out["target_label"].to_numpy(dtype=np.int64)
     out["readout_rule"] = cfg.readout_rule
     out["min_decision_time"] = cfg.min_decision_time
@@ -730,7 +736,7 @@ def main() -> None:
                     "margin": cfg.margin,
                     "hazard_alpha": cfg.hazard_alpha,
                     "hazard_beta": cfg.hazard_beta,
-                    "choice_rule": "trajectory_max_choice",
+                    "choice_rule": "winner_at_readout",
                     "seed": args.seed,
                 }
                 summary_rows.append({**metrics, **mech, **meta})
@@ -817,7 +823,7 @@ def main() -> None:
     candidate_dfs[BEST_VAR_SEEDAVG] = var_avg.copy()
     candidate_dfs[BEST_VAR_SEEDAVG].attrs["outputs"] = var_seed_frames[0].attrs.get("outputs", outputs)
     var_metrics = {**shape_metrics(BEST_VAR_SEEDAVG, var_avg, href), **mechanism_metrics(var_avg, outputs, BEST_VAR_SEEDAVG, args.dt_ms, args.t0_seconds)}
-    raw_summary = pd.concat([raw_summary, pd.DataFrame([{**var_metrics, "variant_type": "variational", "readout_rule": "baseline_threshold", "evidence_gain": 2.0, "threshold": 0.12, "sigma_type": "fixed_sigma", "sigma_base": 0.05, "sigma_middle": 0.0, "sigma_conflict": 0.0, "min_decision_time": 0.0, "sustained_k": 1, "margin": 0.0, "hazard_alpha": 0.0, "hazard_beta": 0.0, "choice_rule": "trajectory_max_choice", "seed": "avg"}])], ignore_index=True)
+    raw_summary = pd.concat([raw_summary, pd.DataFrame([{**var_metrics, "variant_type": "variational", "readout_rule": "baseline_threshold", "evidence_gain": 2.0, "threshold": 0.12, "sigma_type": "fixed_sigma", "sigma_base": 0.05, "sigma_middle": 0.0, "sigma_conflict": 0.0, "min_decision_time": 0.0, "sustained_k": 1, "margin": 0.0, "hazard_alpha": 0.0, "hazard_beta": 0.0, "choice_rule": "winner_at_readout", "seed": "avg"}])], ignore_index=True)
 
     # Variational variants on the best deterministic readout rule.
     best_cfg = ReadoutConfig(
@@ -869,12 +875,12 @@ def main() -> None:
             df["condition_name"] = name
             df["condition"] = name
             metrics = {**shape_metrics(name, df, href), **mechanism_metrics(df, outputs, name, args.dt_ms, args.t0_seconds)}
-            metrics.update({"variant_type": variant_type, "evidence_gain": best_gain, "threshold": best_threshold, "sigma_type": sigma_type, "sigma_base": sigma_base, "sigma_middle": sigma_middle, "sigma_conflict": sigma_conflict, "readout_rule": best_cfg.readout_rule, "min_decision_time": best_cfg.min_decision_time, "sustained_k": best_cfg.sustained_k, "margin": best_cfg.margin, "hazard_alpha": best_cfg.hazard_alpha, "hazard_beta": best_cfg.hazard_beta, "choice_rule": "trajectory_max_choice", "seed": seed})
+            metrics.update({"variant_type": variant_type, "evidence_gain": best_gain, "threshold": best_threshold, "sigma_type": sigma_type, "sigma_base": sigma_base, "sigma_middle": sigma_middle, "sigma_conflict": sigma_conflict, "readout_rule": best_cfg.readout_rule, "min_decision_time": best_cfg.min_decision_time, "sustained_k": best_cfg.sustained_k, "margin": best_cfg.margin, "hazard_alpha": best_cfg.hazard_alpha, "hazard_beta": best_cfg.hazard_beta, "choice_rule": "winner_at_readout", "seed": seed})
             seed_rows.append(metrics)
         part = pd.DataFrame(seed_rows)
         mean_row = part.select_dtypes(include=[np.number]).mean(numeric_only=True).to_dict()
         name = condition_name("varshape_seedavg", best_gain, best_threshold, best_cfg, sigma=f"{sigma_type}_sb{sigma_base:.2f}_sm{sigma_middle:.2f}_sc{sigma_conflict:.2f}", seed="avg")
-        mean_row.update({"condition_name": name, "variant_type": "deterministic" if sigma_type == "none" else "variational", "sigma_type": sigma_type, "sigma_base": sigma_base, "sigma_middle": sigma_middle, "sigma_conflict": sigma_conflict, "readout_rule": best_cfg.readout_rule, "min_decision_time": best_cfg.min_decision_time, "sustained_k": best_cfg.sustained_k, "margin": best_cfg.margin, "hazard_alpha": best_cfg.hazard_alpha, "hazard_beta": best_cfg.hazard_beta, "choice_rule": "trajectory_max_choice", "seed": "avg", "n_seeds": len(seeds)})
+        mean_row.update({"condition_name": name, "variant_type": "deterministic" if sigma_type == "none" else "variational", "sigma_type": sigma_type, "sigma_base": sigma_base, "sigma_middle": sigma_middle, "sigma_conflict": sigma_conflict, "readout_rule": best_cfg.readout_rule, "min_decision_time": best_cfg.min_decision_time, "sustained_k": best_cfg.sustained_k, "margin": best_cfg.margin, "hazard_alpha": best_cfg.hazard_alpha, "hazard_beta": best_cfg.hazard_beta, "choice_rule": "winner_at_readout", "seed": "avg", "n_seeds": len(seeds)})
         var_rows.append(mean_row)
     var_summary = pd.DataFrame(var_rows)
     var_summary = score_candidates(pd.concat([raw_summary.iloc[:0], var_summary], ignore_index=True), current_row, href)
