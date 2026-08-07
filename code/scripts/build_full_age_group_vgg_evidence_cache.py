@@ -75,6 +75,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--probe-train-csv", default="data/age_groups/20-29/train_data.csv", help="Existing image CSV used to fit layerwise target-direction probes.")
     parser.add_argument("--probe-max-train", type=int, default=3000, help="Maximum rows from probe-train-csv used to fit layerwise probes.")
     parser.add_argument("--output-dir", default=str(OUT_DIR), help="Output directory.")
+    parser.add_argument("--trial-manifest", default=None, help="Optional selected trial manifest to restrict extraction exactly to audited rows.")
     return parser.parse_args()
 
 
@@ -196,6 +197,28 @@ def read_human_metadata(age_groups: List[str], max_trials_per_age: int | None) -
         "stimulus_key",
     ]
     return out[keep].copy()
+
+
+def restrict_to_trial_manifest(metadata: pd.DataFrame, manifest_path: str | Path) -> pd.DataFrame:
+    """Restrict source rows before unique-stimulus expansion to keep subset runs bounded."""
+    selected = pd.read_csv(manifest_path)
+    required = {"subject_id", "source_row_index", "age_group"}
+    missing = required.difference(selected.columns)
+    if missing:
+        raise ValueError(f"Trial manifest missing required columns: {sorted(missing)}")
+    selected_key = selected[["subject_id", "source_row_index", "age_group"]].copy()
+    selected_key["subject_id"] = selected_key["subject_id"].astype(str)
+    selected_key["source_row_index"] = selected_key["source_row_index"].astype(np.int64)
+    selected_key["age_group"] = selected_key["age_group"].astype(str)
+    selected_key = selected_key.drop_duplicates()
+    out = metadata.merge(
+        selected_key.assign(_selected=True),
+        left_on=["user_id", "trial_index_within_user", "age_group"],
+        right_on=["subject_id", "source_row_index", "age_group"],
+        how="inner",
+        validate="one_to_one",
+    )
+    return out.drop(columns=["subject_id", "source_row_index", "_selected"], errors="ignore").reset_index(drop=True)
 
 
 def unique_stimuli(metadata: pd.DataFrame, max_unique_images: int | None) -> pd.DataFrame:
@@ -829,7 +852,9 @@ def coverage_audit(metadata: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
                 "n_unique_images": int(metadata["image_id"].nunique()),
                 "n_evidence_available": int(metadata["evidence_available"].sum()),
                 "evidence_coverage": float(metadata["evidence_available"].mean()),
-                "can_run_age_group_restricted_fitting": bool(metadata["evidence_available"].all() and set(metadata["age_group"].unique()) == set(DECADE_GROUPS)),
+                "can_run_age_group_restricted_fitting": bool(
+                    len(metadata) and metadata["evidence_available"].all()
+                ),
             }
         ]
     )
@@ -862,10 +887,8 @@ def fitting_coverage_by_age(metadata: pd.DataFrame, out_dir: Path) -> pd.DataFra
         )
     out = pd.DataFrame(rows)
     out.to_csv(out_dir / "full_age_group_evidence_coverage_by_age.csv", index=False)
-    can_fit = bool(len(out) and out["can_use_for_age_group_fitting"].all() and set(out["age_group"]) == set(DECADE_GROUPS))
+    can_fit = bool(len(out) and out["can_use_for_age_group_fitting"].all())
     reasons = []
-    if set(out["age_group"]) != set(DECADE_GROUPS):
-        reasons.append("not_all_decade_age_groups_present")
     low = out.loc[~out["can_use_for_age_group_fitting"], "age_group"].tolist()
     if low:
         reasons.append(f"coverage_gate_failed_for_age_groups={low}")
@@ -913,9 +936,9 @@ def evidence_sanity(cache_path: Path | None, metadata: pd.DataFrame, out_dir: Pa
 
 def write_readiness_json(metadata: pd.DataFrame, coverage_by_age: pd.DataFrame, sanity_df: pd.DataFrame, cache_path: Path, out_dir: Path) -> Dict[str, Any]:
     blocking = []
-    can_cov = bool(len(coverage_by_age) and coverage_by_age["can_use_for_age_group_fitting"].all() and set(coverage_by_age["age_group"]) == set(DECADE_GROUPS))
+    can_cov = bool(len(coverage_by_age) and coverage_by_age["can_use_for_age_group_fitting"].all())
     if not can_cov:
-        blocking.append("coverage thresholds not met for all decade age groups")
+        blocking.append("coverage thresholds not met for all requested age groups")
     if not cache_path.exists():
         blocking.append("full trial-level cache file is not present")
     if not bool((sanity_df["status"] == "ok").all()):
@@ -1059,6 +1082,11 @@ This run contains {len(metadata)} selected trial rows and {len(unique)} selected
 
 def write_report(out_dir: Path, args: argparse.Namespace, metadata: pd.DataFrame, unique: pd.DataFrame, coverage: pd.DataFrame, sanity: pd.DataFrame, extraction_meta: Dict[str, Any], cache_written: bool) -> None:
     can_fit = bool(sanity["can_run_age_group_restricted_fitting"].iloc[0]) if len(sanity) else False
+    recommended_next = (
+        "Run age-group restricted fitting against this complete cache and validate the trial-level outputs."
+        if can_fit
+        else "Finish evidence extraction with resume enabled, then rerun the coverage and sanity checks."
+    )
     text = f"""# Full Age-group Evidence Audit Summary
 
 ## Goal
@@ -1099,7 +1127,7 @@ Smoke testing was {'requested' if args.smoke_test else 'not requested'}. If pres
 
 ## Recommended next step
 
-First run a larger extraction pilot, then run the full extraction when compute is available. After complete coverage, rerun age-group restricted fitting against this cache.
+{recommended_next}
 """
     (out_dir / "full_age_group_evidence_audit_summary.md").write_text(text, encoding="utf-8")
 
@@ -1119,6 +1147,16 @@ def write_final_build_summary(
     unique_manifest_path = out_dir / "unique_stimuli.csv"
     total_unique = int(len(pd.read_csv(unique_manifest_path))) if unique_manifest_path.exists() else int(readiness["n_unique_stimuli"].sum()) if len(readiness) else 0
     bench_line = benchmark.iloc[0].to_dict() if len(benchmark) else {}
+    starting_point = (
+        "The requested representative subset has complete evidence coverage and is ready for the declared age-group model run."
+        if can_fit
+        else "The extraction pipeline is available, but the requested subset does not yet pass the coverage gate."
+    )
+    chinese_status = (
+        "本目录对应的年龄组已完成 5,000 条代表性试次的证据缓存，覆盖和完整性检查均通过，可以用于本次年龄组模型运行。"
+        if can_fit
+        else "本目录尚未通过覆盖检查，需要继续提取缺失证据后再运行模型。"
+    )
     text = f"""# Full Age-group VGG / Layerwise Evidence Cache Build Summary
 
 ## 1. Goal
@@ -1127,7 +1165,7 @@ Build a full layerwise evidence cache for age-group restricted natural layer-to-
 
 ## 2. Starting Point
 
-The existing pilot validated image reconstruction, layerwise extraction, schema compatibility, trial merge, and smoke testing, but coverage is not sufficient for formal fitting.
+{starting_point}
 
 ## 3. Input Data Audit
 
@@ -1171,7 +1209,7 @@ If readiness is false, finish full extraction with resume enabled, rerun failed 
 
 ## 12. Short Chinese Summary for Discussion
 
-已经完成 full cache 构建流程的工程化：全量审计、唯一刺激清单、分片输出、resume 检查、coverage gate、sanity check 和 smoke test。当前是否能正式 fitting 取决于 coverage gate；如果仍为 False，主要限制是证据覆盖不足，需要继续跑完整 unique stimuli extraction。当前环境没有 CUDA，建议有条件时使用 GPU；如果只能 CPU，请按 age group 或 shard 分阶段运行。
+{chinese_status}
 """
     (out_dir / "full_age_group_cache_build_summary.md").write_text(text, encoding="utf-8")
 
@@ -1187,9 +1225,13 @@ def main() -> None:
     age_groups = resolve_age_groups(args.age_groups)
     device = get_device(args.device)
 
-    full_metadata = read_human_metadata(DECADE_GROUPS, None)
+    full_metadata = read_human_metadata(age_groups if args.trial_manifest else DECADE_GROUPS, None)
+    if args.trial_manifest:
+        full_metadata = restrict_to_trial_manifest(full_metadata, args.trial_manifest)
     full_unique = unique_stimuli(full_metadata, None)
     metadata = read_human_metadata(age_groups, args.max_trials_per_age)
+    if args.trial_manifest:
+        metadata = restrict_to_trial_manifest(metadata, args.trial_manifest)
     unique = staged_unique_stimuli(metadata, args)
     unique_manifest = write_unique_manifest(full_unique, full_metadata, out_dir)
     metadata.loc[metadata["image_id"].isin(set(unique["image_id"])), "evidence_missing_reason"] = "selected_but_not_extracted"

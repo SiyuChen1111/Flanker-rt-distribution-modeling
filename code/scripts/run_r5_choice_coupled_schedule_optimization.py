@@ -132,7 +132,14 @@ def fit_t0(
     incongruent: np.ndarray,
     group: str,
 ) -> dict[str, object]:
-    z_rng = np.random.default_rng(SEED + (0 if group.startswith("older") else 1))
+    if group == "older_80_89":
+        group_seed_offset = 0
+    elif group == "young_20_29":
+        group_seed_offset = 1
+    else:
+        digits = "".join(ch for ch in str(group).split("-")[0] if ch.isdigit())
+        group_seed_offset = int(digits or 2)
+    z_rng = np.random.default_rng(SEED + group_seed_offset)
     z = np.clip(z_rng.normal(size=len(decision_time)), -2.5, 2.5)
     best: dict[str, object] | None = None
     human_q = np.quantile(true_rt, [0.10, 0.25, 0.50, 0.75, 0.90, 0.95])

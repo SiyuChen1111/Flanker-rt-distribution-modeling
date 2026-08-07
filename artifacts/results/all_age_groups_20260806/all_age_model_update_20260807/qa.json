@@ -1,0 +1,9 @@
+{
+  "n_trials": 35000,
+  "n_age_groups": 7,
+  "selected_shared_decision_time_scale": 0.27,
+  "choice_readout_consistency": 1.0,
+  "crossing_rate": 0.9999714285714286,
+  "n_no_crossing": 1,
+  "no_crossing_rt_is_missing": true
+}
