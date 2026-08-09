@@ -2,12 +2,13 @@
 
 ## Current result status
 
-The repository now distinguishes two result layers:
+The repository now distinguishes the retained two-group diagnostics from the audited seven-group update:
 
 - **Retained R5 baseline:** `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/`
-- **Current exploratory choice-coupled result:** `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/`
+- **Earlier two-group choice-coupled result:** `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/`
+- **Audited all-age update:** `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/`
 
-Both use 5,000 representative trials for young adults and 5,000 for older adults. The sample contains 12 young participants and 4 older participants, with unequal trial contributions across participants. Neither result is a final full-cohort or held-out fit.
+The all-age update covers `20-29`, `30-39`, `40-49`, `50-59`, `60-69`, `70-79`, and `80-89`: 75 participants and 5,000 selected trials per group. It is a same-data representative-subset diagnostic, not a final full-cohort, held-out, or hierarchical fit.
 
 ## Problems found and corrections made
 
@@ -16,21 +17,28 @@ Both use 5,000 representative trials for young adults and 5,000 for older adults
 3. **Choice–RT mismatch:** the retained baseline derived RT from the first sustained crossing but choice from the largest state anywhere in the complete trajectory. The two rules disagree on 2,653 of 10,000 trials, all incongruent. Fresh fits now choose the winner at the same readout step used for RT; the old rule remains only for legacy reproduction.
 4. **Late target evidence arrived too close to the deadline:** directly imposing the corrected choice rule exposed very poor incongruent accuracy. Compressing the existing VGG layer-to-time schedule gives Wong-Wang enough time to express the naturally present target recovery before readout.
 
-## What the current exploratory model achieves
+## What the all-age update achieves
 
-All 10,000 model trials cross the decision criterion. Choice is fixed at the sustained-crossing readout step.
+The shared decision-time scale is `0.27`; age-specific `t0` values were then selected for the seven groups. Choice is fixed at the sustained-crossing readout step. The mean absolute condition RT error falls from 95.6 ms to 3.2 ms.
 
-| Group | Human / model accuracy | Human / model incongruent accuracy | Human / model mean RT | RT quantile MAE | Incongruent CAF RMSE |
+| Group | Participants | Human / model accuracy | Human / model mean RT | Condition RT MAE | CAF RMSE |
 |---|---:|---:|---:|---:|---:|
-| Young 20–29 | 0.949 / 0.961 | 0.917 / 0.922 | 0.603 / 0.592 s | 0.061 s | 0.028 |
-| Older 80–89 | 0.976 / 0.979 | 0.961 / 0.959 | 0.941 / 0.891 s | 0.038 s | 0.009 |
+| 20–29 | 12 | 0.949 / 0.961 | 0.603 / 0.595 s | 7.8 ms | 0.018 |
+| 30–39 | 7 | 0.946 / 0.955 | 0.646 / 0.645 s | 1.9 ms | 0.027 |
+| 40–49 | 4 | 0.947 / 0.964 | 0.629 / 0.624 s | 4.1 ms | 0.022 |
+| 50–59 | 11 | 0.965 / 0.978 | 0.664 / 0.662 s | 1.9 ms | 0.017 |
+| 60–69 | 21 | 0.950 / 0.963 | 0.717 / 0.715 s | 2.2 ms | 0.026 |
+| 70–79 | 16 | 0.944 / 0.966 | 0.785 / 0.784 s | 3.5 ms | 0.032 |
+| 80–89 | 4 | 0.976 / 0.979 | 0.941 / 0.940 s | 0.9 ms | 0.018 |
 
-The current result also preserves a theoretically interpretable chain on incongruent trials:
+The model has 35,000 trial-level rows. Choice/readout consistency is 1.0; 34,999 model RTs cross the criterion, while one 70–79 trial is recorded as no-crossing and excluded from model RT summaries.
+
+The update preserves the theoretically interpretable early-flanker/later-target chain on the representative trials. This supports computational sufficiency of the existing VGG evidence after timing adjustment; it does not establish that people use the same mechanism.
+
+The previous two-group diagnostic also preserves a more detailed chain on incongruent trials:
 
 - young: mean input reversal 0.077 s, mean WW-state reversal 0.139 s; target recovery precedes readout on 93.4% of correct trials and 0% of errors;
 - older: mean input reversal 0.116 s, mean WW-state reversal 0.217 s; target recovery precedes readout on 99.9% of correct trials and 0% of errors.
-
-This supports the claim that the existing VGG evidence can drive a choice-coupled decision after its timing is adjusted. It does not establish that people use the same mechanism.
 
 ## RT distribution and congruency checks
 
@@ -38,8 +46,13 @@ The model's combined RT distribution is mildly right-skewed, but much less so th
 
 | Group | Human skew | Model skew |
 |---|---:|---:|
-| Young 20–29 | 4.162 | 0.283 |
-| Older 80–89 | 6.855 | 0.163 |
+| 20–29 | 4.162 | 0.283 |
+| 30–39 | 2.712 | 0.277 |
+| 40–49 | 2.771 | 0.471 |
+| 50–59 | 1.599 | 0.428 |
+| 60–69 | 1.806 | 0.278 |
+| 70–79 | 2.930 | 0.281 |
+| 80–89 | 6.855 | 0.163 |
 
 Within congruent and incongruent conditions, model skew is close to zero. The modest overall right skew mainly comes from mixing two conditions with different locations. KDE plots show that the model's long tail remains too short.
 
@@ -47,8 +60,9 @@ The model also exaggerates the correct-trial incongruent-minus-congruent RT cost
 
 ## Main limitations
 
-- The age-specific schedule was selected from 171 candidates per group on the same representative trials used for evaluation; there are no held-out participants or stimuli.
+- The shared decision-time scale and age-specific `t0` values were selected on the same representative trials used for evaluation; there are no held-out participants or stimuli.
 - The older result is based on only four participants, so participant-level uncertainty is poorly estimated.
+- The middle age groups have unequal participant counts, and 70–79 has one no-crossing model trial.
 - Trial contributions are unequal across participants, and the optimization is trial-weighted rather than a full hierarchical participant fit.
 - The model has no congruent errors, whereas humans do. This limits error-RT and response-category interpretation.
 - Human-like long RT tails and within-condition right skew are not reproduced.

@@ -7,6 +7,7 @@
 - Four-choice Wong-Wang state dynamics
 - R5 sustained crossing / readout rule
 - Group-specific non-decision time (`t0_mean`, `t0_sd`)
+- Audited seven-group representative-subset orchestration and timing calibration
 - CAF, CRF, first-passage, state-trajectory, and incongruent-error diagnostics
 
 ## Current data flow
@@ -14,7 +15,7 @@
 1. A trial stimulus is mapped to four response-direction evidence channels.
 2. VGG layer outputs are cached at the stimulus level.
 3. The cached layerwise evidence is normalized with `per_layer_gap_scale`.
-4. The `natural_smooth_5stage` schedule maps earlier and later VGG layers to an 80-step decision sequence. The current exploratory model compresses this schedule so that late target evidence arrives with enough time to affect a coupled decision.
+4. The `natural_smooth_5stage` schedule maps earlier and later VGG layers to an 80-step decision sequence. The earlier two-group exploratory model compresses this schedule so that late target evidence arrives with enough time to affect a coupled decision; the all-age update reuses the resulting corrected evidence/readout pipeline and recalibrates timing across seven groups.
 5. The four-channel sequence enters the Wong-Wang accumulator.
 6. The R5 readout applies a sustained crossing rule with group-specific threshold and margin; current fits choose the winning channel at this same readout step.
 7. Group-specific non-decision time is added to produce final RT.
@@ -32,10 +33,14 @@
 - `code/scripts/run_r5_choice_rule_alignment_audit.py` compares legacy whole-trajectory choice with choice at the RT readout step.
 - `code/scripts/run_r5_choice_coupled_schedule_optimization.py` searches schedule timing while keeping VGG logits and retained Wong-Wang parameters fixed.
 - `code/scripts/plot_r5_rt_distribution_kde.py` and `code/scripts/plot_r5_caf_and_delta_curves.py` produce current distribution and congruency diagnostics.
+- `code/scripts/run_all_age_group_extension.py` builds the seven-group manifest, model-input tables, and trial-level diagnostics.
+- `code/scripts/run_corrected_model_all_age_groups.py` runs the corrected choice/readout model from the age-group evidence caches.
+- `code/scripts/run_all_age_time_scale_refinement.py` calibrates one shared decision-time scale and age-specific non-decision time, then writes the updated CAF and RT-distribution figures.
+- `code/scripts/plot_all_age_group_rt_distributions.py` recomputes RT density summaries from trial-level predictions.
 
 `DiffDecisionMultiClass` records whether each channel actually crossed. A channel that does not cross receives the final simulation step as a deadline sentinel rather than `0`; downstream analyses must use the crossing flag and must not count the sentinel as a genuine RT. The optional normalized-competition variant is retained only for ablation and is not active in the retained R5 model.
 
-## Retained baseline and current exploratory timing
+## Retained baseline and current timing
 
 The retained R5 package uses group-specific timing and readout settings:
 
@@ -44,7 +49,23 @@ The retained R5 package uses group-specific timing and readout settings:
 
 The diagnostic reconstruction treats the accumulator as deterministic given evidence because the retained R5 path uses `noise_ampa=0.0`.
 
-The current exploratory result keeps the retained VGG logits and Wong-Wang parameters but changes the evidence schedule and refits non-decision time:
+The earlier two-group exploratory result keeps the retained VGG logits and Wong-Wang parameters but changes the evidence schedule and refits non-decision time. The audited all-age update is a separate same-data diagnostic: it keeps VGG evidence, Wong-Wang dynamics, choice, readout, and crossing unchanged, applies a shared decision-time scale of `0.27`, and estimates age-specific non-decision time for all seven groups.
+
+All-age update `t0_mean` values are:
+
+| Age group | `t0_mean` | `t0_sd` |
+|---|---:|---:|
+| 20–29 | 0.556 s | 0.090 s |
+| 30–39 | 0.603 s | 0.120 s |
+| 40–49 | 0.581 s | 0.090 s |
+| 50–59 | 0.616 s | 0.090 s |
+| 60–69 | 0.664 s | 0.150 s |
+| 70–79 | 0.727 s | 0.150 s |
+| 80–89 | 0.882 s | 0.240 s |
+
+The output bundle is `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/`. Its model RT summaries exclude the single 70–79 no-crossing trial, which is retained as a censored sentinel in the trial-level audit.
+
+The earlier two-group exploratory parameters remain documented for provenance:
 
 - young 20–29: `compression=0.275`, `late_shift_s=0.04`, `width_scale=0.8`, `t0_mean=0.447s`, `t0_sd=0.12s`
 - older 80–89: `compression=0.475`, `late_shift_s=-0.04`, `width_scale=0.8`, `t0_mean=0.670s`, `t0_sd=0.18s`

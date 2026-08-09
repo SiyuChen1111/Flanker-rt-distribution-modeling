@@ -283,7 +283,7 @@ def write_summary(
     before = float(comparison[comparison["source"] == "current_model"]["mean_error_vs_human"].abs().mean())
     after = float(comparison[comparison["source"] == "refined_model"]["mean_error_vs_human"].abs().mean())
     lines = [
-        "# 全年龄段时间尺度修正摘要",
+        "# 全年龄段模型更新摘要",
         "",
         f"共享决策时间尺度选择为 `{selected_scale:.2f}`。VGG 证据、模型选择、正式读取时刻和到达阈值状态均未改变；本次只重新映射模型内部决策时间，并按年龄段重估非决策时间。",
         "",

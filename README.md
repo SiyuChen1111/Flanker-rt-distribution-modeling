@@ -4,26 +4,22 @@ This repository studies reaction-time behavior in the Lost in Migration (LIM) / 
 
 ## Current focus
 
-The current main line is the representative extreme-age subset workflow:
+The current main line is an audited representative-subset extension covering all seven age groups:
 
-- young group: `young_20_29`, 5,000 representative trials
-- older group: `older_80_89`, 5,000 representative trials
-- retained baseline: `R5_combined_best`
-- current exploratory extension: choice and RT are coupled at the sustained-crossing step, with the VGG layer-to-time schedule compressed before Wong-Wang accumulation
-- current result bundle: `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/`
+- groups: `20-29`, `30-39`, `40-49`, `50-59`, `60-69`, `70-79`, `80-89`
+- 75 participants and 5,000 selected trials per group
+- corrected choice/readout at the sustained-crossing step, with a shared decision-time scale and age-specific non-decision time
+- result bundle: `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/`
 
-This is a model-development and diagnostic result, not a final full-cohort age-group conclusion.
+This is a model-development and same-data diagnostic result, not a final held-out or hierarchical full-cohort fit.
 
 ## Current conclusion
 
-The retained R5 baseline used the first sustained-crossing time for RT but the maximum state over the whole later trajectory for choice. The two rules disagree on 26.5% of all trials, entirely on incongruent trials, so the baseline accuracy partly used information arriving after its stated decision time.
+The all-age update keeps the VGG evidence, Wong-Wang dynamics, choice rule, readout rule, and crossing definition fixed. A shared decision-time scale of `0.27` and age-specific `t0` values reduce the mean condition RT error from 95.6 ms to 3.2 ms. Choice and the formal readout remain aligned on every recorded model trial; one 70–79 trial did not cross and is treated as censored rather than as an observed RT.
 
-Fresh analyses now bind choice to the same sustained-crossing step as RT. Compressing the existing VGG layer-to-time schedule then allows the real early-flanker/later-target signal to recover before readout while keeping all 10,000 model trials above threshold:
+The result supports a descriptive age-related timing pattern across the seven groups, with model accuracy close to the representative human subsets. It remains exploratory: the same trials were used for calibration and evaluation, the 80–89 group has only four participants, and model RT tails are still shorter than human tails.
 
-- young 20–29: human/model accuracy 0.949/0.961; mean RT 0.603/0.592 s; incongruent CAF RMSE 0.028
-- older 80–89: human/model accuracy 0.976/0.979; mean RT 0.941/0.891 s; incongruent CAF RMSE 0.009
-
-This is a strong in-sample diagnostic improvement, not a final fit. It uses 12 young and 4 older participants, age-specific schedules selected from the same representative trials, and no held-out participants or stimuli. The model also exaggerates the congruency RT cost and produces RT distributions with tails that are much shorter than the human distributions.
+The older two-group choice-coupled schedule result remains available for historical comparison in `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/`; it is not a replacement for the all-age diagnostic bundle.
 
 The supervisor follow-up diagnostic is saved in `artifacts/results/r5_supervisor_followup/` and can be regenerated with `code/scripts/run_r5_supervisor_followup.py`. It recomputes CAF/CRF from raw trial-level rows using actual RT coordinates, audits the R5 state/readout path, and separates fixed-time `S(t)` distributions from first-passage-time behavior.
 
@@ -47,14 +43,15 @@ That branch is useful for understanding the model logic, but it is no longer the
 Start with the current interpretation:
 
 1. `docs/current_results_and_limitations.md`
-2. `docs/r5-supervisor-systematic-report-20260803.md`
-3. `artifacts/results/r5_choice_rule_alignment_audit_20260803/summary.md`
-4. `artifacts/results/r5_choice_coupled_refit_20260803/summary.md`
-5. `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/summary.md`
-6. `artifacts/results/r5_real_vgg_target_flanker_audit_20260803/summary.md`
-7. `docs/r5-supervisor-followup.md`
-8. `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/README_best_model_R5_combined_best.md`
-9. `docs/model_framework_summary.md`
+2. `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/summaries/updated_model_summary_chinese.md`
+3. `docs/r5-supervisor-systematic-report-20260803.md`
+4. `artifacts/results/r5_choice_rule_alignment_audit_20260803/summary.md`
+5. `artifacts/results/r5_choice_coupled_refit_20260803/summary.md`
+6. `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/summary.md`
+7. `artifacts/results/r5_real_vgg_target_flanker_audit_20260803/summary.md`
+8. `docs/r5-supervisor-followup.md`
+9. `artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best/README_best_model_R5_combined_best.md`
+10. `docs/model_framework_summary.md`
 
 Then read the teaching and mechanism examples:
 
@@ -81,6 +78,10 @@ Current representative extreme-age workflow:
 - `code/scripts/run_r5_choice_coupled_schedule_optimization.py`
 - `code/scripts/plot_r5_rt_distribution_kde.py`
 - `code/scripts/plot_r5_caf_and_delta_curves.py`
+- `code/scripts/run_all_age_group_extension.py`
+- `code/scripts/run_corrected_model_all_age_groups.py`
+- `code/scripts/run_all_age_time_scale_refinement.py`
+- `code/scripts/plot_all_age_group_rt_distributions.py`
 
 Earlier DMC + variational evidence + Wong-Wang workflow:
 
@@ -132,7 +133,7 @@ Second-round supporting diagnostics:
 - `artifacts/results/ww_diffdecision_core_audit_20260802/summary.md`
 - `artifacts/results/r5_real_vgg_target_flanker_audit_20260803/summary.md`
 
-Current choice-coupled result and figures:
+Choice-coupled and all-age results:
 
 - `artifacts/results/r5_choice_rule_alignment_audit_20260803/summary.md`
 - `artifacts/results/r5_choice_coupled_refit_20260803/summary.md`
@@ -140,6 +141,9 @@ Current choice-coupled result and figures:
 - `artifacts/results/r5_rt_distribution_kde_20260803/observed_vs_model_rt_kde.pdf`
 - `artifacts/results/r5_caf_delta_curves_20260803/current_model_caf_human_vs_model.pdf`
 - `artifacts/results/r5_caf_delta_curves_20260803/current_model_delta_rt_human_vs_model.pdf`
+- `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/figures_publication/all_age_caf_updated_model.pdf`
+- `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/figures_publication/all_age_rt_distribution_updated_model.pdf`
+- `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/results/updated_model_parameters_by_age.csv`
 - `output/pdf/current_improved_r5_model_summary_tables.pdf`
 
 Earlier retained mechanism-test results:
@@ -176,4 +180,4 @@ Earlier retained mechanism-test results:
 
 Older experiments and archives remain for provenance. Use `artifacts/results/ARTIFACT_DOCS_INDEX.md` to distinguish the retained R5 baseline, current supporting diagnostics, and historical reports.
 
-Do not interpret the choice-coupled schedule result as a full-data final fit or proof of a human conflict-control mechanism. It is an exploratory representative-subset result with clear remaining limitations in RT shape, congruency effects, participant coverage, and out-of-sample validation.
+Do not interpret the choice-coupled schedule result or the all-age update as a full-data final fit or proof of a human conflict-control mechanism. They are exploratory representative-subset results with clear remaining limitations in RT shape, congruency effects, participant coverage, and out-of-sample validation.

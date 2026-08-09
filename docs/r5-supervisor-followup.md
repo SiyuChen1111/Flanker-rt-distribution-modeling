@@ -23,6 +23,10 @@ python code/scripts/run_r5_choice_rule_alignment_audit.py
 python code/scripts/run_r5_choice_coupled_schedule_optimization.py
 python code/scripts/plot_r5_rt_distribution_kde.py
 python code/scripts/plot_r5_caf_and_delta_curves.py
+python code/scripts/run_all_age_group_extension.py
+python code/scripts/run_corrected_model_all_age_groups.py
+python code/scripts/run_all_age_time_scale_refinement.py
+python code/scripts/plot_all_age_group_rt_distributions.py
 ```
 
 The first script writes its outputs to:
@@ -39,6 +43,7 @@ The additional scripts write new bundles rather than overwriting the original fo
 - `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/`
 - `artifacts/results/r5_rt_distribution_kde_20260803/`
 - `artifacts/results/r5_caf_delta_curves_20260803/`
+- `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/`
 
 For the broader generated-results tree, use `artifacts/results/ARTIFACT_DOCS_INDEX.md` and `artifacts/results/artifact_docs_inventory.csv` before treating any older artifact Markdown as current evidence.
 
@@ -74,9 +79,12 @@ For the broader generated-results tree, use `artifacts/results/ARTIFACT_DOCS_IND
 | `artifacts/results/r5_real_vgg_target_flanker_audit_20260803/summary.md` | Separates real VGG layer evidence, scheduled WW input, state recovery, and RT/choice readout |
 | `artifacts/results/r5_choice_rule_alignment_audit_20260803/summary.md` | Quantifies disagreement between whole-trajectory choice and the winner at the RT readout step |
 | `artifacts/results/r5_choice_coupled_refit_20260803/summary.md` | Shows what happens when the corrected rule is imposed before retiming the evidence schedule |
-| `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/summary.md` | Current exploratory choice-coupled timing result |
+| `artifacts/results/r5_choice_coupled_schedule_optimization_20260803/summary.md` | Earlier two-group exploratory choice-coupled timing result |
 | `artifacts/results/r5_rt_distribution_kde_20260803/observed_vs_model_rt_kde.pdf` | Human/model RT densities by congruency and age group |
 | `artifacts/results/r5_caf_delta_curves_20260803/current_model_delta_rt_human_vs_model.pdf` | Correct-trial congruency RT cost across participant-level RT bins |
+| `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/figures_publication/all_age_caf_updated_model.pdf` | Seven-group CAF small multiples from updated trial-level predictions |
+| `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/figures_publication/all_age_rt_distribution_updated_model.pdf` | Seven-group human/model RT distributions |
+| `artifacts/results/all_age_groups_20260806/all_age_model_update_20260807/results/updated_model_parameters_by_age.csv` | Age-specific timing and fit diagnostics for the all-age update |
 
 ## Verified checks
 
@@ -93,9 +101,11 @@ For the broader generated-results tree, use `artifacts/results/ARTIFACT_DOCS_IND
 
 The follow-up sequence now supports a more specific diagnosis. The retained baseline's RT and choice used different time windows: 26.5% of all trials receive different choices when the winner is evaluated at the stated RT step, and every disagreement is incongruent. Directly correcting that rule exposes a timing bottleneck because late target recovery arrives too close to the simulation deadline.
 
-The current exploratory solution keeps the real VGG evidence and retained Wong-Wang parameters, couples choice to RT, and compresses the evidence schedule. All 10,000 trials then cross, and overall accuracy, incongruent accuracy, mean RT, and incongruent CAF are close to the representative human subset. This shows that the existing VGG target-recovery signal is computationally sufficient after retiming; no additional handcrafted conflict-control module is required for this result.
+The earlier two-group exploratory solution keeps the real VGG evidence and retained Wong-Wang parameters, couples choice to RT, and compresses the evidence schedule. All 10,000 trials then cross, and overall accuracy, incongruent accuracy, mean RT, and incongruent CAF are close to the representative human subset. This shows that the existing VGG target-recovery signal is computationally sufficient after retiming; no additional handcrafted conflict-control module is required for this result.
 
 The improvement is incomplete. KDE plots show model RT tails that are too short, and delta curves show an incongruent RT cost several times larger than the human effect. The current schedule was selected and assessed on the same trials, with only four older participants. The result is therefore an in-sample mechanism diagnostic, not a validated age model.
+
+The seven-group update extends the same corrected choice/readout audit to `20-29` through `80-89`. It uses a shared decision-time scale of `0.27` and age-specific `t0`; the 70–79 group contains one no-crossing censored model trial. Its integrated CAF and RT figures are descriptive diagnostics, not evidence of a causal age mechanism.
 
 ## Important unresolved issue
 

@@ -1,4 +1,5 @@
 path,top_folder,category,trust_level,title,size_bytes,duplicate_suffix_copy
+all_age_groups_20260806/all_age_model_update_20260807/summaries/updated_model_summary_chinese.md,all_age_groups_20260806,current_spine,current_diagnostic,全年龄段模型更新摘要,984,no
 age_groups/analysis_summary.md,age_groups,unclassified_reference,needs_reader_caution,Age-Group Post-Stage2 Analysis,2025,no
 age_groups_full_matched_compare/analysis_summary.md,age_groups_full_matched_compare,unclassified_reference,needs_reader_caution,Full Matched Age-Group Analysis,2132,no
 age_groups_interim/current_stage_conclusion_memo.md,age_groups_interim,legacy_or_historical_reference,legacy_reference_only,Current-stage conclusion memo,2388,no
