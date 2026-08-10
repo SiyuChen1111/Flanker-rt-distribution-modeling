@@ -33,6 +33,7 @@ anaconda_projects/
 
 # Cache
 .cache/
+.matplotlib-cache/
 
 # Skills directory
 skills/
@@ -88,3 +89,13 @@ artifacts/results/**/*.json
 artifacts/results/**/*.csv
 artifacts/results/**/*.png
 artifacts/results/**/*snapshot.txt
+
+# Local repository-cleanup archives and audit scratch
+Flanker-rt-distribution-modeling_local_archive_*/
+repository_cleanup_dependency_audit.md
+
+# Non-canonical searches and temporary reproductions
+artifacts/results/presentation_model_full_rerun_*/
+artifacts/results/presentation_model_reproduction/
+artifacts/results/**/tmp_*/
+artifacts/results/**/search_*/

@@ -1,0 +1,51 @@
+{
+  "model_name": "natural_layer_to_time_vgg16_ww_r5",
+  "presentation_result": "best_model_R5_combined_best",
+  "corrected_equivalent_result": "r5_choice_coupled_schedule_optimization_20260803",
+  "seed": 20260530,
+  "vgg_layers": ["conv3", "conv4", "conv5", "pooled", "final"],
+  "normalization": "per_layer_gap_scale",
+  "base_schedule": "natural_smooth_5stage",
+  "time_steps": 80,
+  "dt_ms": 10,
+  "wong_wang": {
+    "n_choices": 4,
+    "noise_ampa": 0.0,
+    "decision_class": "DiffDecisionMultiClass"
+  },
+  "presentation_choice_rule": "trajectory_max_choice",
+  "corrected_choice_rule": "winner_at_readout",
+  "rt_rule": "first_sustained_crossing_plus_nondecision_time",
+  "groups": {
+    "young_20_29": {
+      "n_trials": 5000,
+      "evidence_gain": 0.8,
+      "threshold": 0.12,
+      "sustained_k": 2,
+      "margin": 0.0,
+      "min_decision_time": 0.0,
+      "presentation_t0_mean_s": 0.55,
+      "presentation_t0_sd_s": 0.12,
+      "corrected_schedule": {
+        "compression": 0.275,
+        "late_shift_s": 0.04,
+        "width_scale": 0.8
+      }
+    },
+    "older_80_89": {
+      "n_trials": 5000,
+      "evidence_gain": 0.8,
+      "threshold": 0.14,
+      "sustained_k": 2,
+      "margin": 0.02,
+      "min_decision_time": 0.0,
+      "presentation_t0_mean_s": 0.75,
+      "presentation_t0_sd_s": 0.2,
+      "corrected_schedule": {
+        "compression": 0.475,
+        "late_shift_s": -0.04,
+        "width_scale": 0.8
+      }
+    }
+  }
+}

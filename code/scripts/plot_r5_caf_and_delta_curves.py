@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,17 +12,17 @@ import pandas as pd
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-INPUT = (
+DEFAULT_INPUT = (
     PROJECT_ROOT
     / "artifacts/results/r5_choice_coupled_schedule_optimization_20260803"
     / "selected_trial_level_predictions.csv"
 )
-REFERENCE_CAF = (
+DEFAULT_REFERENCE_CAF = (
     PROJECT_ROOT
     / "artifacts/results/r5_choice_coupled_schedule_optimization_20260803"
     / "selected_caf.csv"
 )
-OUTPUT_DIR = PROJECT_ROOT / "artifacts/results/r5_caf_delta_curves_20260803"
+DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "artifacts/results/r5_caf_delta_curves_20260803"
 
 GROUPS = [("young_20_29", "Young adults (20-29)"), ("older_80_89", "Older adults (80-89)")]
 CONDITIONS = [(0, "Congruent", "#0072B2"), (1, "Incongruent", "#E69F00")]
@@ -322,7 +323,17 @@ def validate_caf(caf: pd.DataFrame) -> None:
 
 
 def main() -> None:
-    data = pd.read_csv(INPUT)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--input", default=str(DEFAULT_INPUT))
+    parser.add_argument("--reference-caf", default=str(DEFAULT_REFERENCE_CAF))
+    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
+    args = parser.parse_args()
+    input_path = Path(args.input)
+    reference_path = Path(args.reference_caf)
+    output_dir = Path(args.output_dir)
+    global OUTPUT_DIR, REFERENCE_CAF
+    OUTPUT_DIR, REFERENCE_CAF = output_dir, reference_path
+    data = pd.read_csv(input_path)
     required = {
         "analysis_group", "user_id", "true_rt", "pred_rt", "congruency",
         "human_correct", "model_correct", "crossed",

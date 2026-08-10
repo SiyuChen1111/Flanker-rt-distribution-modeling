@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,12 +12,12 @@ import pandas as pd
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-INPUT = (
+DEFAULT_INPUT = (
     PROJECT_ROOT
     / "artifacts/results/r5_choice_coupled_schedule_optimization_20260803"
     / "selected_trial_level_predictions.csv"
 )
-OUTPUT_DIR = PROJECT_ROOT / "artifacts/results/r5_rt_distribution_kde_20260803"
+DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "artifacts/results/r5_rt_distribution_kde_20260803"
 
 GROUPS = [("young_20_29", "Young adults (20–29)"), ("older_80_89", "Older adults (80–89)")]
 CONDITIONS = [(0, "Congruent", "#0072B2"), (1, "Incongruent", "#E69F00")]
@@ -39,7 +40,13 @@ def kde(values: np.ndarray, grid: np.ndarray, bandwidth: float) -> np.ndarray:
 
 
 def main() -> None:
-    data = pd.read_csv(INPUT)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--input", default=str(DEFAULT_INPUT))
+    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
+    args = parser.parse_args()
+    input_path = Path(args.input)
+    output_dir = Path(args.output_dir)
+    data = pd.read_csv(input_path)
     required = {"analysis_group", "true_rt", "pred_rt", "congruency", "crossed"}
     missing = required.difference(data.columns)
     if missing:
@@ -51,7 +58,7 @@ def main() -> None:
     if (data[["true_rt", "pred_rt"]] <= 0).any().any():
         raise ValueError("RT columns contain non-positive values.")
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
     grid = np.linspace(X_MIN, X_MAX, 900)
 
     plt.rcParams.update(
@@ -145,16 +152,16 @@ def main() -> None:
     )
     fig.subplots_adjust(left=0.085, right=0.99, bottom=0.20, top=0.78, wspace=0.27)
 
-    stem = OUTPUT_DIR / "observed_vs_model_rt_kde"
+    stem = output_dir / "observed_vs_model_rt_kde"
     fig.savefig(stem.with_suffix(".png"), dpi=400, bbox_inches="tight", facecolor="white")
     fig.savefig(stem.with_suffix(".pdf"), bbox_inches="tight", facecolor="white")
     fig.savefig(stem.with_suffix(".svg"), bbox_inches="tight", facecolor="white")
     fig.savefig(stem.with_suffix(".tiff"), dpi=400, bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
-    pd.DataFrame(source_rows).to_csv(OUTPUT_DIR / "observed_vs_model_rt_kde_source_data.csv", index=False)
+    pd.DataFrame(source_rows).to_csv(output_dir / "observed_vs_model_rt_kde_source_data.csv", index=False)
     summary = pd.DataFrame(summary_rows)
-    summary.to_csv(OUTPUT_DIR / "observed_vs_model_rt_summary.csv", index=False)
+    summary.to_csv(output_dir / "observed_vs_model_rt_summary.csv", index=False)
 
     min_coverage = summary["fraction_within_display"].min()
     caption = (
@@ -167,10 +174,10 @@ def main() -> None:
         f"from all RTs, while the display is limited to {X_MIN:.1f}–{X_MAX:.1f} s; every plotted "
         f"series retains at least {min_coverage:.1%} of observations within this window."
     )
-    (OUTPUT_DIR / "observed_vs_model_rt_kde_caption.md").write_text(caption, encoding="utf-8")
+    (output_dir / "observed_vs_model_rt_kde_caption.md").write_text(caption, encoding="utf-8")
 
     print(summary.to_string(index=False))
-    print(f"Saved figure and source data to {OUTPUT_DIR}")
+    print(f"Saved figure and source data to {output_dir}")
 
 
 if __name__ == "__main__":
