@@ -1,6 +1,6 @@
 # Human Signatures and Evaluation Framework for the Dynamic Flanker Model
 
-**Evaluation Framework v1.0**
+**Evaluation Framework v1.0 — FROZEN FOR POST-M0 MODEL DEVELOPMENT**
 
 This document is the baseline evaluation framework to use before further model optimization. It defines behavioral targets from human Lost in Migration (LIM) data, not from features of the current model. It is an evaluation plan and status audit, not a claim that every candidate signature has been confirmed or reproduced.
 
@@ -164,11 +164,11 @@ H2-H4 capture complementary levels of conflict-related behavior rather than redu
 
 ### H5. RT-Distribution Shape
 
-**1. Established human phenomenon.** Human RT distributions are generally non-Gaussian, positively skewed, and contain a slow tail. The exact LIM form must be measured rather than assumed.
+**1. Established human phenomenon.** Human RT distributions are typically non-Gaussian and often positively skewed, but the exact skewness and slow-tail structure in LIM must be quantified in the human-only audit.
 
 **2. Prior evidence.** Distributional shape is a standard property of human decision times. Published LIM figures and current diagnostics indicate broader human than M0 distributions.
 
-**3. Manifestation in human LIM data.** A broad slow tail is evident, but a unified human-only audit has not yet frozen its condition-specific or accuracy-specific form.
+**3. Manifestation in human LIM data.** Existing LIM summaries motivate a formal distribution audit, but they do not yet establish that every condition, accuracy class, or age group has the same skewness or slow-tail structure.
 
 **4. Operational definition.** Report mean, median, SD, skewness, q10/q25/q50/q75/q90/q95, tail ratios, quantile error, and Wasserstein distance by relevant condition.
 
@@ -336,7 +336,7 @@ The following is a proposed manuscript structure, not a statement that all resul
 4. **Recurrent competition and fast error versus successful correction.** Analyze fast-error, slow-correct, and fast-correct trajectories.
 5. **General decision variability and non-deterministic congruent behavior.** Address H1 without prescribing the final mechanism.
 6. **Full-model behavioral adequacy across H1-H6.** Recompute the complete core matrix after targeted improvements, including distributions rather than only means.
-7. **Extended predictive and individual-difference validity.** Evaluate P1, P2, and appropriate held-out participant and stimulus tests.
+7. **Predictive, individual-difference, and external Flanker validation.** Evaluate P1 age-related behavioral variation, P2 stimulus-specific prediction, held-out participants and stimuli, and replication in an independent Flanker dataset if feasible.
 8. **Mechanistic necessity.** Test whether ablations selectively degrade the hypothesized human signature while preserving the broader core matrix.
 
 ## 13. Central Contribution
@@ -375,7 +375,8 @@ Prioritized roadmap:
 9. re-evaluate all H1-H6 after every modification;
 10. evaluate P1 and P2 after core adequacy is sufficiently stable;
 11. run mechanistic trajectory analyses and ablations;
-12. only later consider external Flanker datasets and cross-task generalization.
+12. after internal validation, prioritize replication in an independent Flanker dataset;
+13. only after the Flanker account is stable, consider cross-task generalization.
 
 ## 15. Baseline Freeze
 
