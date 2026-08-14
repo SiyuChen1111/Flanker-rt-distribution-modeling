@@ -1,0 +1,11 @@
+predictor,outcome,n_trials,pearson_r,p_value
+early_target_minus_flanker_input,model_correct,4989,0.2958994151373986,2.2626133167576598e-101
+early_target_minus_flanker_input,pred_rt_s,4989,-0.43584853194644935,1.857342791309591e-230
+precommit_reversal_time_s,model_correct,4535,,
+precommit_reversal_time_s,pred_rt_s,4535,0.5159114799192284,5.497550457584215e-307
+wrong_state_peak_before_commitment,model_correct,4989,-0.46528688601770374,1.5220401315865215e-266
+wrong_state_peak_before_commitment,pred_rt_s,4989,0.24501265844585174,4.176506876495073e-69
+target_minus_wrong_at_commitment,model_correct,4989,0.7283855510545543,0.0
+target_minus_wrong_at_commitment,pred_rt_s,4989,0.5194128762337115,0.0
+commitment_time_s,model_correct,4989,0.42764417787910586,5.091867526628817e-221
+commitment_time_s,pred_rt_s,4989,0.6857099939111153,0.0

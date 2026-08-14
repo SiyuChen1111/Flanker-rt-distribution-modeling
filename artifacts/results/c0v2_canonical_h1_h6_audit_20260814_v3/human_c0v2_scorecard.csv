@@ -1,0 +1,7 @@
+Signature,Full Human,Matched Human,C0v2,Distance,Objective,Status
+H1,participant mean error=0.019; repeat inconsistency=0.057,error=0.0131; repeat=NOT ESTIMABLE (1 pairs),error=0.0000; repeat=NOT ESTIMABLE (1 pairs),error difference=0.0131,REPAIR / MATCH,FAIL
+H2,RT=0.075 s; accuracy=0.057,RT=0.0648s; accuracy=0.0571,RT=0.2514s; accuracy=0.0652,RT=0.1867s; accuracy=0.0081,PRESERVE,PARTIAL
+H3,slope=0.449; slow-fast=0.160,fast=0.8423; slow=0.9777; slow-fast=0.1353; slope=0.3915,fast=0.8324; slow=0.9975; slow-fast=0.1651; slope=0.3545,curve RMSE=0.0123; slope difference=0.0370,IMPROVE / PRIMARY,PARTIAL
+H4,slope=0.192; late-early=0.056 s,slope=0.1816; late-early=0.0571s,slope=0.2002; late-early=0.0811s,curve RMSE=0.1870s; slope difference=0.0185,PRESERVE,FAIL
+H5,skew congruent=1.590; incongruent=1.089,SD=0.142/0.163s; skew=2.759/2.626,SD=0.135/0.163s; skew=-0.084/0.088,Wasserstein=0.1226/0.1069s,QUANTIFY / IMPROVE,FAIL
+H6,congruent=-0.022 s; incongruent=-0.091 s; interaction=-0.069 s,congruent=-0.1608s; incongruent=-0.1808s; interaction=-0.0200s,congruent=NOT ESTIMABLE; incongruent=-0.2383s; interaction=NOT ESTIMABLE,incongruent difference=0.0575s,POTENTIAL IMPROVEMENT,NOT ESTIMABLE
