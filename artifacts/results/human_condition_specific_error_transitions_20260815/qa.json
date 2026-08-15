@@ -1,0 +1,13 @@
+{
+  "analysis": "human-only condition-specific sequential error-transition audit",
+  "seed": 20260815,
+  "n_participants": 75,
+  "n_true_adjacent_pairs": 3143319,
+  "all_pairs_trial_difference_one": true,
+  "all_participants_in_every_fold": true,
+  "n_simulations_per_null": 300,
+  "n_png": 5,
+  "n_pdf": 5,
+  "classification": "T1 \u2014 GENERAL ERROR-PRONE STATE",
+  "c0v2_read_or_modified": false
+}
