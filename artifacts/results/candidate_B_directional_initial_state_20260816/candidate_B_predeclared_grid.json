@@ -1,0 +1,338 @@
+{
+  "declared_before_behavioral_evaluation": true,
+  "grid": [
+    {
+      "condition_id": "B0",
+      "variant": "B0",
+      "sign_family": "hard_reset",
+      "fraction": 0.0,
+      "beta": 0.0,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 0.0
+    },
+    {
+      "condition_id": "B1_01",
+      "variant": "B1",
+      "sign_family": "choice_repetition",
+      "fraction": 0.1,
+      "beta": 0.0,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_02",
+      "variant": "B2",
+      "sign_family": "choice_repetition",
+      "fraction": 0.1,
+      "beta": 0.25,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_03",
+      "variant": "B2",
+      "sign_family": "choice_repetition",
+      "fraction": 0.1,
+      "beta": 0.5,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_04",
+      "variant": "B2",
+      "sign_family": "choice_repetition",
+      "fraction": 0.1,
+      "beta": 0.75,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B1_05",
+      "variant": "B1",
+      "sign_family": "choice_repetition",
+      "fraction": 0.25,
+      "beta": 0.0,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_06",
+      "variant": "B2",
+      "sign_family": "choice_repetition",
+      "fraction": 0.25,
+      "beta": 0.25,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_07",
+      "variant": "B2",
+      "sign_family": "choice_repetition",
+      "fraction": 0.25,
+      "beta": 0.5,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_08",
+      "variant": "B2",
+      "sign_family": "choice_repetition",
+      "fraction": 0.25,
+      "beta": 0.75,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B1_09",
+      "variant": "B1",
+      "sign_family": "choice_repetition",
+      "fraction": 0.5,
+      "beta": 0.0,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_10",
+      "variant": "B2",
+      "sign_family": "choice_repetition",
+      "fraction": 0.5,
+      "beta": 0.25,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_11",
+      "variant": "B2",
+      "sign_family": "choice_repetition",
+      "fraction": 0.5,
+      "beta": 0.5,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_12",
+      "variant": "B2",
+      "sign_family": "choice_repetition",
+      "fraction": 0.5,
+      "beta": 0.75,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B1_13",
+      "variant": "B1",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.1,
+      "beta": 0.0,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B2_14",
+      "variant": "B2",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.1,
+      "beta": 0.25,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B2_15",
+      "variant": "B2",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.1,
+      "beta": 0.5,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B2_16",
+      "variant": "B2",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.1,
+      "beta": 0.75,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B1_17",
+      "variant": "B1",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.25,
+      "beta": 0.0,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B2_18",
+      "variant": "B2",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.25,
+      "beta": 0.25,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B2_19",
+      "variant": "B2",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.25,
+      "beta": 0.5,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B2_20",
+      "variant": "B2",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.25,
+      "beta": 0.75,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B1_21",
+      "variant": "B1",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.5,
+      "beta": 0.0,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B2_22",
+      "variant": "B2",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.5,
+      "beta": 0.25,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B2_23",
+      "variant": "B2",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.5,
+      "beta": 0.5,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B2_24",
+      "variant": "B2",
+      "sign_family": "win_stay_lose_shift",
+      "fraction": 0.5,
+      "beta": 0.75,
+      "eta_correct_multiplier": 1.0,
+      "eta_error_multiplier": -1.0
+    },
+    {
+      "condition_id": "B1_25",
+      "variant": "B1",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.1,
+      "beta": 0.0,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_26",
+      "variant": "B2",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.1,
+      "beta": 0.25,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_27",
+      "variant": "B2",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.1,
+      "beta": 0.5,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_28",
+      "variant": "B2",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.1,
+      "beta": 0.75,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B1_29",
+      "variant": "B1",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.25,
+      "beta": 0.0,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_30",
+      "variant": "B2",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.25,
+      "beta": 0.25,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_31",
+      "variant": "B2",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.25,
+      "beta": 0.5,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_32",
+      "variant": "B2",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.25,
+      "beta": 0.75,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B1_33",
+      "variant": "B1",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.5,
+      "beta": 0.0,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_34",
+      "variant": "B2",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.5,
+      "beta": 0.25,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_35",
+      "variant": "B2",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.5,
+      "beta": 0.5,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    },
+    {
+      "condition_id": "B2_36",
+      "variant": "B2",
+      "sign_family": "error_only_carryover",
+      "fraction": 0.5,
+      "beta": 0.75,
+      "eta_correct_multiplier": 0.0,
+      "eta_error_multiplier": 1.0
+    }
+  ]
+}

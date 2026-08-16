@@ -1,0 +1,292 @@
+{
+  "declared_before_behavioral_evaluation": true,
+  "basis": "fractions of each frozen age threshold minus neutral S0=0.1",
+  "fractions": [
+    0.0,
+    0.1,
+    0.25,
+    0.5
+  ],
+  "by_age": [
+    {
+      "age_group": "20-29",
+      "neutral_S0": 0.1,
+      "threshold": 0.12,
+      "neutral_to_threshold": 0.01999999999999999,
+      "fraction": 0.0,
+      "amplitude": 0.0,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "20-29",
+      "neutral_S0": 0.1,
+      "threshold": 0.12,
+      "neutral_to_threshold": 0.01999999999999999,
+      "fraction": 0.1,
+      "amplitude": 0.001999999999999999,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "20-29",
+      "neutral_S0": 0.1,
+      "threshold": 0.12,
+      "neutral_to_threshold": 0.01999999999999999,
+      "fraction": 0.25,
+      "amplitude": 0.0049999999999999975,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "20-29",
+      "neutral_S0": 0.1,
+      "threshold": 0.12,
+      "neutral_to_threshold": 0.01999999999999999,
+      "fraction": 0.5,
+      "amplitude": 0.009999999999999995,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "30-39",
+      "neutral_S0": 0.1,
+      "threshold": 0.1233333333333333,
+      "neutral_to_threshold": 0.02333333333333329,
+      "fraction": 0.0,
+      "amplitude": 0.0,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "30-39",
+      "neutral_S0": 0.1,
+      "threshold": 0.1233333333333333,
+      "neutral_to_threshold": 0.02333333333333329,
+      "fraction": 0.1,
+      "amplitude": 0.002333333333333329,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "30-39",
+      "neutral_S0": 0.1,
+      "threshold": 0.1233333333333333,
+      "neutral_to_threshold": 0.02333333333333329,
+      "fraction": 0.25,
+      "amplitude": 0.005833333333333322,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "30-39",
+      "neutral_S0": 0.1,
+      "threshold": 0.1233333333333333,
+      "neutral_to_threshold": 0.02333333333333329,
+      "fraction": 0.5,
+      "amplitude": 0.011666666666666645,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "40-49",
+      "neutral_S0": 0.1,
+      "threshold": 0.1266666666666666,
+      "neutral_to_threshold": 0.02666666666666659,
+      "fraction": 0.0,
+      "amplitude": 0.0,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "40-49",
+      "neutral_S0": 0.1,
+      "threshold": 0.1266666666666666,
+      "neutral_to_threshold": 0.02666666666666659,
+      "fraction": 0.1,
+      "amplitude": 0.002666666666666659,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "40-49",
+      "neutral_S0": 0.1,
+      "threshold": 0.1266666666666666,
+      "neutral_to_threshold": 0.02666666666666659,
+      "fraction": 0.25,
+      "amplitude": 0.006666666666666647,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "40-49",
+      "neutral_S0": 0.1,
+      "threshold": 0.1266666666666666,
+      "neutral_to_threshold": 0.02666666666666659,
+      "fraction": 0.5,
+      "amplitude": 0.013333333333333294,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "50-59",
+      "neutral_S0": 0.1,
+      "threshold": 0.13,
+      "neutral_to_threshold": 0.03,
+      "fraction": 0.0,
+      "amplitude": 0.0,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "50-59",
+      "neutral_S0": 0.1,
+      "threshold": 0.13,
+      "neutral_to_threshold": 0.03,
+      "fraction": 0.1,
+      "amplitude": 0.003,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "50-59",
+      "neutral_S0": 0.1,
+      "threshold": 0.13,
+      "neutral_to_threshold": 0.03,
+      "fraction": 0.25,
+      "amplitude": 0.0075,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "50-59",
+      "neutral_S0": 0.1,
+      "threshold": 0.13,
+      "neutral_to_threshold": 0.03,
+      "fraction": 0.5,
+      "amplitude": 0.015,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "60-69",
+      "neutral_S0": 0.1,
+      "threshold": 0.1333333333333333,
+      "neutral_to_threshold": 0.0333333333333333,
+      "fraction": 0.0,
+      "amplitude": 0.0,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "60-69",
+      "neutral_S0": 0.1,
+      "threshold": 0.1333333333333333,
+      "neutral_to_threshold": 0.0333333333333333,
+      "fraction": 0.1,
+      "amplitude": 0.00333333333333333,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "60-69",
+      "neutral_S0": 0.1,
+      "threshold": 0.1333333333333333,
+      "neutral_to_threshold": 0.0333333333333333,
+      "fraction": 0.25,
+      "amplitude": 0.008333333333333325,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "60-69",
+      "neutral_S0": 0.1,
+      "threshold": 0.1333333333333333,
+      "neutral_to_threshold": 0.0333333333333333,
+      "fraction": 0.5,
+      "amplitude": 0.01666666666666665,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "70-79",
+      "neutral_S0": 0.1,
+      "threshold": 0.1366666666666666,
+      "neutral_to_threshold": 0.0366666666666666,
+      "fraction": 0.0,
+      "amplitude": 0.0,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "70-79",
+      "neutral_S0": 0.1,
+      "threshold": 0.1366666666666666,
+      "neutral_to_threshold": 0.0366666666666666,
+      "fraction": 0.1,
+      "amplitude": 0.00366666666666666,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "70-79",
+      "neutral_S0": 0.1,
+      "threshold": 0.1366666666666666,
+      "neutral_to_threshold": 0.0366666666666666,
+      "fraction": 0.25,
+      "amplitude": 0.00916666666666665,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "70-79",
+      "neutral_S0": 0.1,
+      "threshold": 0.1366666666666666,
+      "neutral_to_threshold": 0.0366666666666666,
+      "fraction": 0.5,
+      "amplitude": 0.0183333333333333,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "80-89",
+      "neutral_S0": 0.1,
+      "threshold": 0.14,
+      "neutral_to_threshold": 0.04000000000000001,
+      "fraction": 0.0,
+      "amplitude": 0.0,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "80-89",
+      "neutral_S0": 0.1,
+      "threshold": 0.14,
+      "neutral_to_threshold": 0.04000000000000001,
+      "fraction": 0.1,
+      "amplitude": 0.004000000000000001,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "80-89",
+      "neutral_S0": 0.1,
+      "threshold": 0.14,
+      "neutral_to_threshold": 0.04000000000000001,
+      "fraction": 0.25,
+      "amplitude": 0.010000000000000002,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    },
+    {
+      "age_group": "80-89",
+      "neutral_S0": 0.1,
+      "threshold": 0.14,
+      "neutral_to_threshold": 0.04000000000000001,
+      "fraction": 0.5,
+      "amplitude": 0.020000000000000004,
+      "legal_state_min": 0.0,
+      "legal_state_max": 1.0
+    }
+  ]
+}

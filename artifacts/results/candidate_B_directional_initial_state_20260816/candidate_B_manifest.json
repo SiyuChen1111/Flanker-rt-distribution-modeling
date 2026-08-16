@@ -1,0 +1,28 @@
+{
+  "candidate": "B",
+  "parent": "C0v2_causal_commitment_baseline",
+  "classification": "B-S1 \u2014 STARTING-STATE LOCUS FAILURE",
+  "human_classification": "H-D2 \u2014 MIXED DIRECTIONAL STRUCTURE",
+  "subset": {
+    "participants": 12,
+    "trials_per_participant": 256,
+    "n_trials": 3072,
+    "selection": "fixed age allocation, smallest IDs, first 256 cleaned chronological trials; every session boundary and cleaning gap is retained as a reset; no outcome-based selection"
+  },
+  "endogenous_history": true,
+  "teacher_forcing": false,
+  "physical_ITI_used": false,
+  "random_seed": 20260816,
+  "parent_hashes_before": {
+    "configs/canonical_baseline_manifest.json": "eb92530e62bed0dc818bfb75adcc99aae2e1600b7c6dd56651b9bac9ecefa32a",
+    "code/scripts/vgg_wongwang_lim.py": "ecc3200b4c4426b7436e91858fed854f2d4426291214b7db551fcd0b427e3a9c",
+    "code/scripts/canonical_choice_rt.py": "efe752ad93443c77ca3bbbaf6dc957802319012c6959089920fb7c6f62d3bada"
+  },
+  "parent_hashes_after": {
+    "configs/canonical_baseline_manifest.json": "eb92530e62bed0dc818bfb75adcc99aae2e1600b7c6dd56651b9bac9ecefa32a",
+    "code/scripts/vgg_wongwang_lim.py": "ecc3200b4c4426b7436e91858fed854f2d4426291214b7db551fcd0b427e3a9c",
+    "code/scripts/canonical_choice_rt.py": "efe752ad93443c77ca3bbbaf6dc957802319012c6959089920fb7c6f62d3bada"
+  },
+  "parent_unchanged": true,
+  "stage1_survivors": []
+}

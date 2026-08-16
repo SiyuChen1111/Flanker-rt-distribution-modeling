@@ -1,0 +1,96 @@
+{
+  "schema_version": 2,
+  "model_id": "C0v2_causal_commitment_baseline",
+  "status": "CANONICAL BASELINE FOR FUTURE MODEL DEVELOPMENT",
+  "selection_basis": "choice_rt_semantic_consistency_not_behavioral_superiority",
+  "historical_comparator": {
+    "model_id": "M0_fast_error_baseline",
+    "status": "frozen_audit_only",
+    "choice_rule": "trajectory_max_choice",
+    "result_dir": "artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/best_model_R5_combined_best"
+  },
+  "superseded_canonical_candidate": {
+    "model_id": "C0_canonical_choice_rt_baseline",
+    "status": "SUPERSEDED CANONICAL CANDIDATE — start-of-window timestamp semantics",
+    "reason": "for sustained_k > 1 the recorded window start depends on later samples",
+    "provenance_preserved": true
+  },
+  "canonical_result": {
+    "result_dir": "artifacts/results/r5_choice_coupled_schedule_optimization_20260803",
+    "trial_predictions": "artifacts/results/r5_choice_coupled_schedule_optimization_20260803/selected_trial_level_predictions.csv",
+    "qa": "artifacts/results/r5_choice_coupled_schedule_optimization_20260803/qa.json",
+    "scope": "two representative age groups, 5000 selected trials per group, in-sample diagnostic"
+  },
+  "canonical_extensions": {
+    "C0_all_age_diagnostic_extension": {
+      "status": "CANONICAL C0 RESULT EXTENSION; NOT A SEPARATE PARENT MODEL",
+      "manifest": "configs/c0_all_age_diagnostic_extension.json",
+      "result_dir": "artifacts/results/all_age_groups_20260806/all_age_model_update_20260807",
+      "scope": "seven age groups, 5000 representative trials per group, same-data diagnostic timing calibration",
+      "inherits_decision_semantics_from": "C0_canonical_choice_rt_baseline",
+      "future_model_branch_point": false
+    }
+  },
+  "implementation": {
+    "canonical_readout": "code/scripts/canonical_choice_rt.py::apply_canonical_readout",
+    "accumulator": "code/scripts/vgg_wongwang_lim.py::WongWangMultiClassDecision",
+    "readout_core": "code/scripts/optimize_natural_layer_to_time_rt_shape.py::apply_readout",
+    "fixed_result_provenance": "code/scripts/run_r5_choice_coupled_schedule_optimization.py",
+    "evaluation_entry_point": "code/scripts/reproduce_presentation_model.py --group all --analysis-only",
+    "future_model_branch_point": "code/scripts/canonical_choice_rt.py::apply_canonical_readout",
+    "identity_audit": "code/scripts/run_c0v2_causal_commitment_audit.py"
+  },
+  "visual_evidence": {
+    "frontend": "VGG16",
+    "vgg_layers": ["conv3", "conv4", "conv5", "pooled", "final"],
+    "normalization": "per_layer_gap_scale",
+    "evidence_cache": "artifacts/results/natural_layer_to_time_var_ww/representative_extreme_age_subset_5000/evidence_cache/representative_subset_layerwise_evidence.npz"
+  },
+  "time_grid": {
+    "steps": 80,
+    "dt_seconds": 0.01
+  },
+  "decision_semantics": {
+    "event": "completion of the first qualifying sustained-crossing window",
+    "indexing": "zero_based_inclusive",
+    "window_start_rule": "first qualifying sustained-window start",
+    "commitment_step_rule": "window_start_step_plus_sustained_k_minus_1",
+    "choice_rule": "winner_at_commitment_completion",
+    "rt_rule": "commitment_step_times_dt_plus_nondecision_time",
+    "threshold_operator": "winner_state_strictly_greater_than_threshold",
+    "margin_operator": "winner_minus_runner_greater_than_or_equal_to_margin",
+    "same_winner_required_across_sustained_window": true,
+    "post_commitment_mutation_invariant_required": true,
+    "prefix_through_commitment_sufficient_required": true,
+    "no_crossing": "censored_deadline_sentinel"
+  },
+  "group_parameters": {
+    "young_20_29": {
+      "evidence_gain": 0.8,
+      "threshold": 0.12,
+      "sustained_k": 2,
+      "margin": 0.0,
+      "min_decision_time_seconds": 0.0,
+      "schedule": {"compression": 0.275, "late_shift_seconds": 0.04, "width_scale": 0.8},
+      "nondecision_time_mean_seconds": 0.4466653890834066,
+      "nondecision_time_sd_seconds": 0.12
+    },
+    "older_80_89": {
+      "evidence_gain": 0.8,
+      "threshold": 0.14,
+      "sustained_k": 2,
+      "margin": 0.02,
+      "min_decision_time_seconds": 0.0,
+      "schedule": {"compression": 0.475, "late_shift_seconds": -0.04, "width_scale": 0.8},
+      "nondecision_time_mean_seconds": 0.6701965076658208,
+      "nondecision_time_sd_seconds": 0.18
+    }
+  },
+  "random_seed": 20260530,
+  "guardrails": {
+    "legacy_choice_allowed": false,
+    "post_readout_choice_updates_allowed": false,
+    "optimization_authorized_by_this_manifest": false,
+    "historical_results_must_not_be_overwritten": true
+  }
+}

@@ -1,0 +1,11 @@
+metric,previous_outcome,alignment,n,value,participant_mean,participants,same_direction_participants
+current_error_probability,correct,nonmatch,2250343,0.044923818280146625,0.045106453139481896,75.0,
+current_error_probability,correct,match,751519,0.049164425649917035,0.04691977436430404,75.0,
+alignment_effect_nonmatch_minus_match,correct,contrast,3001862,-0.004240607369770409,-0.0018133212248221382,75.0,35.0
+current_error_probability,error,nonmatch,106008,0.0891347822805826,0.09017456275923244,75.0,
+current_error_probability,error,match,35449,0.11543343958926909,0.11059766207351276,75.0,
+alignment_effect_nonmatch_minus_match,error,contrast,141457,-0.026298657308686496,-0.02042309931428032,75.0,18.0
+error_response_repetition,all,all,151583,0.28789508058291496,0.3109717051577747,,
+error_response_repetition_conditional_chance,all,all,151583,0.2430857462028504,0.2480357171582087,,
+current_response_repetition,correct,all,3001862,0.2518470202827445,0.25302010992603,,
+current_response_repetition,error,all,141457,0.2372311020310059,0.24116018967192085,,
